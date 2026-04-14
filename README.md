@@ -56,12 +56,12 @@ npm run dev
 
 ```
 remiflow/
-├── contracts/          # Soroban smart contracts
-├── backend/            # Node.js API server
-├── frontend/           # React web application
-├── oracle/             # Rate oracle service
-├── docs/               # Documentation
-└── tests/              # Test suites
+├── smart-contracts/      # Soroban smart contracts
+├── backend/              # Node.js API server
+├── frontend/             # React web application
+├── oracle/               # Rate oracle service
+├── docs/                 # Documentation
+└── tests/                # Test suites
 ```
 
 ---
