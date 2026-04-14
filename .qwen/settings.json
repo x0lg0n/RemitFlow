@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls *)",
+      "Bash(mv *)",
+      "Bash(which *)",
+      "Bash(cargo *)",
+      "Bash(find *)",
+      "Bash(do)",
+      "Bash(cp *)",
+      "Bash(done)",
+      "Bash(cat *)",
+      "Bash(rm *)"
+    ]
+  },
+  "$version": 3
+}
