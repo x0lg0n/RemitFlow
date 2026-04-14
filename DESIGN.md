@@ -56,7 +56,7 @@
 ### 2.1 Contract Structure
 
 ```rust
-// File: contracts/remiflow/src/lib.rs
+// File: smart-contracts/contracts/remiflow/src/lib.rs
 
 #![no_std]
 use soroban_sdk::{

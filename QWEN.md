@@ -53,7 +53,7 @@ Built exclusively on Stellar's SEP-31 rails — not copyable on Ethereum or Sola
 | **Soroban Smart Contract** | Rust              | Route optimization logic, payment execution, fee splitting  |
 | **Rate Oracle**            | Off-chain service | Fetches real-time anchor fees and FX rates from anchor APIs |
 | **Backend/API**            | Node.js/Express   | Orchestrates oracle calls, user management, SEP-10 auth     |
-| **Frontend**               | React/TypeScript  | User-facing remittance UI with route comparison             |
+| **Frontend**               | Next.js/TypeScript  | User-facing remittance UI with route comparison             |
 | **Anchor Integration**     | SEP-31 / SEP-10   | Multi-anchor cross-border payment rails                     |
 
 ---
@@ -63,7 +63,7 @@ Built exclusively on Stellar's SEP-31 rails — not copyable on Ethereum or Sola
 - **Smart Contracts:** Rust on Soroban (Stellar's smart contract VM)
 - **Stellar Protocols:** SEP-31 (cross-border payments), SEP-10 (authentication)
 - **Off-Chain Oracle:** Node.js with cron-based rate fetching
-- **Frontend:** React 18.x + TypeScript
+- **Frontend:** Next.js 13.x + TypeScript
 - **Backend:** Node.js 20.x + Express
 - **Database:** PostgreSQL 15.x
 - **Cache:** Redis 7.x
@@ -100,33 +100,131 @@ RemitFlow/
 ├── PROJECT_PLAN.md                 # Detailed project timeline and resource plan
 ├── ROADMAP.md                      # Phased product roadmap (18 months)
 ├── DESIGN.md                       # Technical architecture and design document
+├── AGENTS.md                       # MANDATORY — rules for contributors & AI agents
 ├── CONTRIBUTING.md                 # Contribution guidelines
 ├── README.md                       # Project overview and quick start
 ├── QWEN.md                         # This file - project context for AI assistance
+├── LICENSE                         # MIT License
+├── .gitignore
 ├── .github/
-│   └── ISSUE_TEMPLATES/
-│       ├── bug_report.md           # Bug report template
-│       └── feature_request.md      # Feature request template
-├── contracts/                      # Soroban smart contracts (Rust) — TO BE CREATED
-├── backend/                        # Node.js API server — TO BE CREATED
-├── frontend/                       # React web application — TO BE CREATED
-├── oracle/                         # Rate oracle service — TO BE CREATED
-├── docs/                           # Additional documentation — TO BE CREATED
-└── tests/                          # Test suites — TO BE CREATED
+│   ├── ISSUE_TEMPLATES/
+│   │   ├── bug_report.md
+│   │   └── feature_request.md
+│   └── workflows/
+│       ├── ci.yml
+│       ├── deploy-contracts.yml
+│       └── deploy-backend.yml
+├── smart-contracts/
+│   └── contracts/
+│       └── remiflow/
+│           ├── Cargo.toml
+│           └── src/
+├── backend/
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── Dockerfile
+│   ├── .env.example
+│   └── src/
+│       ├── config/
+│       ├── routes/
+│       ├── controllers/
+│       ├── services/
+│       ├── middleware/
+│       ├── validators/
+│       └── types/
+├── oracle/
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── Dockerfile
+│   ├── .env.example
+│   └── src/
+│       ├── fetchers/
+│       ├── validators/
+│       ├── publisher/
+│       ├── cache/
+│       ├── monitoring/
+│       └── types/
+├── frontend/
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── .env.example
+│   └── app/
+│       ├── (auth)/
+│       ├── (app)/
+│       ├── (anchor)/
+│       └── api/
+├── database/
+│   ├── migrations/
+│   └── seeds/
+├── docker/
+│   └── nginx/
+├── scripts/
+├── docs/
+└── tests/
+    ├── e2e/
+    ├── integration/
+    ├── performance/
+    └── fixtures/
 ```
 
 ---
 
 ## Key Files Reference
 
-| File              | Purpose                                                                                                                                      |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PRD.md`          | Full product requirements: problem statement, user personas, functional/non-functional requirements, success metrics, risk register          |
-| `PROJECT_PLAN.md` | Week-by-week execution plan, team structure, budget allocation, communication plan, change management                                        |
-| `ROADMAP.md`      | 5-phase product roadmap from MVP to ecosystem, with revenue projections and funding timeline                                                 |
-| `DESIGN.md`       | Technical architecture: smart contract code, API endpoints, oracle implementation, database schema, security design, deployment architecture |
-| `CONTRIBUTING.md` | Development workflow, coding standards, testing requirements, security guidelines                                                            |
-| `README.md`       | Project overview, quick start guide, documentation links                                                                                     |
+| File | Purpose |
+|---|---|
+| `PRD.md` | Full product requirements: problem statement, user personas, functional/non-functional requirements, success metrics, risk register |
+| `PROJECT_PLAN.md` | Week-by-week execution plan, team structure, budget allocation, communication plan, change management |
+| `ROADMAP.md` | 5-phase product roadmap from MVP to ecosystem, with revenue projections and funding timeline |
+| `DESIGN.md` | Technical architecture: smart contract code, API endpoints, oracle implementation, database schema, security design, deployment architecture |
+| `AGENTS.md` | **MANDATORY** — coding standards, security rules, testing rules, git workflow, AI agent rules |
+| `CONTRIBUTING.md` | Development workflow, coding standards summary, testing requirements |
+| `README.md` | Project overview, quick start guide, documentation links |
+
+---
+
+## MANDATORY Rules for AI Agents (READ FIRST)
+
+### Role: Project Manager & Technical Head
+AI agents operate as **Project Manager and Technical Head**. You must:
+- **Own the technical quality** of every file — production-ready, industry-standard
+- **Anticipate next steps** — if a feature needs a config file, create it; if a service needs a type, define it
+- **Enforce standards** — reject patterns that don't match industry best practices
+- **Track progress** — use todos to plan, execute, and report on multi-step tasks
+- **Flag risks proactively** — if a design decision conflicts with official docs, call it out
+- **Think like an architect** — consider scalability, security, maintainability, and DX in every change
+
+### Rule #1: ALWAYS Verify Against Official Documentation Before Writing Code
+**Never implement based on memory, assumptions, or outdated patterns.** Technology evolves fast — always verify.
+
+**Verification workflow:**
+1. **Identify the technology** you're working with
+2. **Use `web_search`** to find the latest official documentation
+3. **Use `web_fetch`** to read the relevant documentation page
+4. **Cross-check** your planned implementation against the official docs
+5. **If official docs differ from `DESIGN.md`** → follow the **official docs** and flag the discrepancy
+
+**Official documentation sources to always use:**
+
+| Component | Official Documentation |
+|---|---|
+| Soroban Smart Contracts | https://soroban.stellar.org/docs |
+| Stellar Protocols (SEP-31, SEP-10) | https://developers.stellar.org/docs |
+| Stellar SDK (js-stellar-sdk) | https://stellar.github.io/js-stellar-sdk/ |
+| Freighter Wallet | https://github.com/stellar/freighter |
+| Next.js (Frontend) | https://nextjs.org/docs |
+| React | https://react.dev/reference/react |
+| Express.js (Backend) | https://expressjs.com/en/api.html |
+| Node.js | https://nodejs.org/api |
+| PostgreSQL | https://www.postgresql.org/docs/ |
+| Redis | https://redis.io/docs/ |
+| TypeScript | https://www.typescriptlang.org/docs/ |
+| Tailwind CSS | https://tailwindcss.com/docs |
+| Rust | https://doc.rust-lang.org/book/ |
+| Docker | https://docs.docker.com/ |
+
+### Additional AI Agent Rules
+All other AI agent rules (file creation, modification, when to ask vs. act, prohibited actions, output rules) are defined in `AGENTS.md` §9. **Read `AGENTS.md` before contributing.**
 
 ---
 
@@ -176,11 +274,11 @@ RemitFlow/
 
 ## Next Steps (Development Phase)
 
-The following directories need to be scaffolded and populated:
+All directories and placeholder files have been scaffolded. The following remains:
 
-1. `contracts/` — Soroban smart contract (Rust) based on DESIGN.md §2
-2. `backend/` — Node.js API server based on DESIGN.md §3
-3. `oracle/` — Rate oracle service based on DESIGN.md §4
-4. `frontend/` — React web app
-5. `database/schema.sql` — PostgreSQL schema from DESIGN.md §5
-6. `tests/` — Test suites for all components
+1. **Smart contracts** — Implement full Soroban contract logic (anchor registration, rate storage, routing, payment, admin, events) per DESIGN.md §2
+2. **Backend** — Implement Express API (SEP-10 auth, rate comparison, transactions, anchor management) per DESIGN.md §3
+3. **Oracle** — Implement rate fetching, validation, caching, and contract publishing per DESIGN.md §4
+4. **Frontend** — Build Next.js app with wallet connection, rate comparison UI, send flow, transaction history, anchor dashboard
+5. **Database** — Apply migrations and seed test data per DESIGN.md §5
+6. **Tests** — Write comprehensive test suites for all components
