@@ -1,4 +1,4 @@
-import { Keypair, Address, Contract, rpc, xdr, TransactionBuilder } from "@stellar/stellar-sdk";
+import { Contract, TransactionBuilder, xdr } from "@stellar/stellar-sdk";
 import {
   contractAddress,
   getOracleKeypair,
@@ -21,15 +21,48 @@ export async function publishToContract(
   try {
     const oracleKeypair = getOracleKeypair();
 
+    const latestLedger = await rpcServer.getLatestLedger();
+    const feeBps = Math.max(0, Math.round(rate.feePercent * 100));
+    const scaledFxRate = Math.round(rate.fxRate * 100);
+
+    const rateStruct = xdr.ScVal.scvMap([
+      new xdr.ScMapEntry({
+        key: xdr.ScVal.scvSymbol("anchor_id"),
+        val: xdr.ScVal.scvString(rate.anchorId),
+      }),
+      new xdr.ScMapEntry({
+        key: xdr.ScVal.scvSymbol("fee_bps"),
+        val: xdr.ScVal.scvU32(feeBps),
+      }),
+      new xdr.ScMapEntry({
+        key: xdr.ScVal.scvSymbol("fx_rate"),
+        val: xdr.ScVal.scvI128(lo128(scaledFxRate)),
+      }),
+      new xdr.ScMapEntry({
+        key: xdr.ScVal.scvSymbol("last_updated"),
+        val: xdr.ScVal.scvU32(latestLedger.sequence),
+      }),
+      new xdr.ScMapEntry({
+        key: xdr.ScVal.scvSymbol("min_amount"),
+        val: xdr.ScVal.scvI128(lo128(rate.minAmount)),
+      }),
+      new xdr.ScMapEntry({
+        key: xdr.ScVal.scvSymbol("max_amount"),
+        val: xdr.ScVal.scvI128(lo128(rate.maxAmount)),
+      }),
+      new xdr.ScMapEntry({
+        key: xdr.ScVal.scvSymbol("from_currency"),
+        val: xdr.ScVal.scvString(rate.fromCurrency),
+      }),
+      new xdr.ScMapEntry({
+        key: xdr.ScVal.scvSymbol("to_currency"),
+        val: xdr.ScVal.scvString(rate.toCurrency),
+      }),
+    ]);
+
     // Build contract call.
     const contract = new Contract(contractAddress);
-    const callOp = contract.call(
-      "update_anchor_rate",
-      xdr.ScVal.scvString(rate.anchorId),
-      xdr.ScVal.scvU64(new xdr.Uint64(BigInt(rate.feePercent))),
-      xdr.ScVal.scvI128(lo128(rate.fxRate)),
-      xdr.ScVal.scvU64(new xdr.Uint64(BigInt(Math.floor(rate.fetchedAt.getTime() / 1000))))
-    );
+    const callOp = contract.call("update_anchor_rate", rateStruct);
 
     // Fetch the oracle account from the network.
     const source = await rpcServer.getAccount(oracleKeypair.publicKey());

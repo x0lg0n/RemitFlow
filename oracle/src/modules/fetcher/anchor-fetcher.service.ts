@@ -1,6 +1,74 @@
 import axios from "axios";
 import { AnchorConfig, FetchedRate } from "../../shared/types/oracle.types";
 
+interface RateCallbackResponse {
+  price?: string | number;
+  sell_amount?: string | number;
+  buy_amount?: string | number;
+  fee?: {
+    total?: string | number;
+  };
+}
+
+async function fetchFromRateCallback(
+  anchor: AnchorConfig,
+  fromCurrency: string,
+  toCurrency: string,
+  destinationCountry: string
+): Promise<FetchedRate | null> {
+  try {
+    const response = await axios.get<RateCallbackResponse>(`${anchor.baseUrl}/rate`, {
+      params: {
+        type: "indicative",
+        sell_asset: `stellar:${fromCurrency}`,
+        buy_asset: `stellar:${toCurrency}`,
+        sell_amount: 1000,
+        destination_country: destinationCountry,
+      },
+      headers: {
+        Authorization: `Bearer ${anchor.authToken}`,
+        "x-remitflow-internal-client": "oracle",
+      },
+      timeout: 5000,
+      validateStatus: (status) => status < 500,
+    });
+
+    const { data } = response;
+
+    const fxRate = Number(data.price ?? 0);
+    const sellAmount = Number(data.sell_amount ?? 0);
+    const buyAmount = Number(data.buy_amount ?? 0);
+    const feeAmount = Number(data.fee?.total ?? 0);
+
+    if (!Number.isFinite(fxRate) || fxRate <= 0) {
+      console.warn(
+        `[${anchor.id}] Rate callback returned no usable quote (${response.status}) for ${fromCurrency}->${toCurrency} ${destinationCountry}`
+      );
+      return null;
+    }
+
+    const feePercent = sellAmount > 0 ? (feeAmount / sellAmount) * 100 : 0;
+
+    return {
+      anchorId: anchor.id,
+      fromCurrency,
+      toCurrency,
+      destinationCountry,
+      feePercent,
+      fxRate,
+      minAmount: 1,
+      maxAmount: 1_000_000,
+      fetchedAt: new Date(),
+    };
+  } catch (error) {
+    console.error(
+      `[${anchor.id}] Rate callback fallback failed:`,
+      (error as Error).message
+    );
+    return null;
+  }
+}
+
 /**
  * Fetch fee and FX rate data from a single anchor's SEP-31 API.
  * Calls /fee and /quotes endpoints concurrently.
@@ -11,6 +79,11 @@ export async function fetchAnchorRate(
   toCurrency: string,
   destinationCountry: string
 ): Promise<FetchedRate | null> {
+  const rateOnlyMode = (process.env.ORACLE_USE_RATE_CALLBACK_ONLY ?? "false").toLowerCase() === "true";
+  if (rateOnlyMode) {
+    return fetchFromRateCallback(anchor, fromCurrency, toCurrency, destinationCountry);
+  }
+
   try {
     const [feeResponse, quoteResponse] = await Promise.allSettled([
       axios.get(`${anchor.baseUrl}/fee`, {
@@ -38,14 +111,24 @@ export async function fetchAnchorRate(
       console.error(
         `[${anchor.id}] Fee fetch failed: ${feeResponse.reason.message}`
       );
-      return null;
+      return fetchFromRateCallback(
+        anchor,
+        fromCurrency,
+        toCurrency,
+        destinationCountry
+      );
     }
 
     if (quoteResponse.status === "rejected") {
       console.error(
         `[${anchor.id}] Quote fetch failed: ${quoteResponse.reason.message}`
       );
-      return null;
+      return fetchFromRateCallback(
+        anchor,
+        fromCurrency,
+        toCurrency,
+        destinationCountry
+      );
     }
 
     const feeData = feeResponse.value.data;
@@ -67,7 +150,7 @@ export async function fetchAnchorRate(
       quoteData.max_amount ?? quoteData.max ?? feeData.max_amount ?? 0
     );
 
-    return {
+    const fetched: FetchedRate = {
       anchorId: anchor.id,
       fromCurrency,
       toCurrency,
@@ -78,11 +161,27 @@ export async function fetchAnchorRate(
       maxAmount,
       fetchedAt: new Date(),
     };
+
+    if (!Number.isFinite(fetched.fxRate) || fetched.fxRate <= 0) {
+      return fetchFromRateCallback(
+        anchor,
+        fromCurrency,
+        toCurrency,
+        destinationCountry
+      );
+    }
+
+    return fetched;
   } catch (error) {
     console.error(
       `[${anchor.id}] Unexpected error fetching rates:`,
       (error as Error).message
     );
-    return null;
+    return fetchFromRateCallback(
+      anchor,
+      fromCurrency,
+      toCurrency,
+      destinationCountry
+    );
   }
 }

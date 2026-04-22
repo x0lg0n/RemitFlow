@@ -1,6 +1,38 @@
+import { lookup } from "node:dns/promises";
 import { pool } from "../../shared/config/database";
 import { AnchorConfig, FetchedRate } from "../../shared/types/oracle.types";
 import { fetchAnchorRate } from "./anchor-fetcher.service";
+
+async function isAnchorResolvable(anchor: AnchorConfig): Promise<boolean> {
+  let hostname: string;
+  try {
+    hostname = new URL(anchor.baseUrl).hostname;
+  } catch {
+    console.warn(`[${anchor.id}] Skipping anchor with invalid base_url: ${anchor.baseUrl}`);
+    return false;
+  }
+
+  if (!hostname) {
+    console.warn(`[${anchor.id}] Skipping anchor with empty hostname in base_url: ${anchor.baseUrl}`);
+    return false;
+  }
+
+  const timeoutMs = Number.parseInt(process.env.ORACLE_DNS_TIMEOUT_MS ?? "2000", 10);
+
+  try {
+    await Promise.race([
+      lookup(hostname),
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("DNS lookup timed out")), Number.isNaN(timeoutMs) ? 2000 : timeoutMs);
+      }),
+    ]);
+    return true;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`[${anchor.id}] Skipping unreachable anchor host (${hostname}): ${message}`);
+    return false;
+  }
+}
 
 /**
  * Fetch rates from ALL active anchors concurrently.
@@ -8,10 +40,15 @@ import { fetchAnchorRate } from "./anchor-fetcher.service";
  */
 export async function fetchAllRates(): Promise<(FetchedRate | null)[]> {
   const anchors = await getActiveAnchors();
-  console.log(`Oracle: Fetching rates from ${anchors.length} anchors...`);
+  const reachableMask = await Promise.all(anchors.map((anchor) => isAnchorResolvable(anchor)));
+  const reachableAnchors = anchors.filter((_anchor, index) => reachableMask[index]);
+
+  console.log(
+    `Oracle: Fetching rates from ${reachableAnchors.length}/${anchors.length} reachable anchors...`
+  );
 
   const results = await Promise.allSettled(
-    anchors.map(async (anchor) => {
+    reachableAnchors.map(async (anchor) => {
       const rates: (FetchedRate | null)[] = [];
 
       for (const fromCurrency of anchor.sourceAssets) {
