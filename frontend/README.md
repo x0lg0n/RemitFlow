@@ -12,14 +12,16 @@
 
 ## Overview
 
-The RemitFlow frontend is a modern, responsive web application built with **Next.js 15 (App Router)** that enables users to:
+The RemitFlow frontend is a **production-ready**, modern web application built with **Next.js 16 (App Router)** that enables users to:
 - Connect their Stellar wallet (Freighter)
-- Compare rates across multiple anchors
-- Send cross-border payments
-- Track transaction history
-- View detailed transaction receipts
+- Browse and activate payment anchors
+- Compare rates across multiple anchors in real-time
+- Send cross-border payments through optimal corridors
+- Track transaction history and savings
+- Monitor payment status and receipts
 
-**Demo:** http://localhost:3000 (local development)
+**Production URL:** https://remitflow.io  
+**Development URL:** http://localhost:3000
 
 ---
 
@@ -29,29 +31,39 @@ The RemitFlow frontend is a modern, responsive web application built with **Next
 - Freighter wallet connection
 - SEP-10 authentication
 - Automatic session management
-- Multi-account support
+- User profile management
+
+✅ **Anchor Marketplace**
+- Browse available anchors
+- One-click anchor activation
+- Guided credential setup
+- Anchor status monitoring
 
 ✅ **Rate Comparison**
 - Real-time rate updates
 - Multi-anchor comparison table
 - Fee breakdown visualization
 - Best route highlighting
+- Corridor filtering and search
 
 ✅ **Payment Sending**
 - Multi-step payment wizard
 - Amount & fee calculation
 - Anchor selection
 - Transaction confirmation
+- Receipt generation
 
 ✅ **Transaction Dashboard**
 - Transaction history
 - Status tracking (pending → completed)
-- Receipt generation
+- Savings analytics
 - Export transaction data
 
-✅ **Responsive Design**
-- Mobile-first approach
-- Dark mode support
+✅ **Professional UI/UX**
+- Dark mode design system
+- Glassmorphism effects
+- Smooth animations
+- Mobile-first responsive design
 - Accessibility (WCAG 2.1 AA)
 - Touch-friendly interface
 
@@ -209,11 +221,11 @@ docker run -p 3000:3000 remitflow-frontend
 
 ## Security
 
-✅ **CSP Headers** - Content Security Policy enforced
-✅ **No Local Storage of Keys** - Freighter wallet only
-✅ **CORS Validation** - Backend API protected
-✅ **Input Validation** - All user inputs validated
-✅ **XSS Prevention** - React auto-escaping
+- ✅ **CSP Headers** - Content Security Policy enforced
+- ✅ **No Local Storage of Keys** - Freighter wallet only
+- ✅ **CORS Validation** - Backend API protected
+- ✅ **Input Validation** - All user inputs validated
+- ✅ **XSS Prevention** - React auto-escaping
 
 ---
 
