@@ -22,7 +22,7 @@ export async function getAllActiveRates(): Promise<AnchorRate[]> {
      JOIN anchors a ON r.anchor_id = a.id
      WHERE a.is_active = true
        AND r.expires_at > NOW()
-     ORDER BY r.fee_percent ASC, r.fx_rate DESC`
+     ORDER BY r.fee_percent ASC, r.fx_rate DESC`,
   );
 
   const rates = rows.map(rowToAnchorRate);
@@ -32,7 +32,7 @@ export async function getAllActiveRates(): Promise<AnchorRate[]> {
 
 /** Find the cheapest route for the given request. */
 export async function findBestRoute(
-  request: RateRequest
+  request: RateRequest,
 ): Promise<BestRouteResponse | null> {
   const rates = await getAllActiveRates();
   return computeBestRoute(rates, request);
@@ -41,27 +41,27 @@ export async function findBestRoute(
 /** Deterministically compute the cheapest route from a rate list. */
 export function computeBestRoute(
   rates: AnchorRate[],
-  request: RateRequest
+  request: RateRequest,
 ): BestRouteResponse | null {
-
-  console.log('[computeBestRoute] Request:', JSON.stringify(request));
-  console.log('[computeBestRoute] Available rates count:', rates.length);
+  console.log("[computeBestRoute] Request:", JSON.stringify(request));
+  console.log("[computeBestRoute] Available rates count:", rates.length);
 
   // Filter by corridor, destination country, and amount range.
-  const eligible = rates.filter(
-    (r) => {
-      const matches = r.fromCurrency === request.fromCurrency &&
-        r.toCurrency === request.toCurrency &&
-        r.destinationCountry === request.destinationCountry &&
-        request.amount >= r.minAmount &&
-        request.amount <= r.maxAmount;
-      
-      console.log(`[computeBestRoute] Rate ${r.anchorId}: ${r.fromCurrency}→${r.toCurrency} (${r.destinationCountry}) min=${r.minAmount} max=${r.maxAmount} - ${matches ? 'MATCH' : 'NO MATCH'}`);
-      return matches;
-    }
-  );
+  const eligible = rates.filter((r) => {
+    const matches =
+      r.fromCurrency === request.fromCurrency &&
+      r.toCurrency === request.toCurrency &&
+      r.destinationCountry === request.destinationCountry &&
+      request.amount >= r.minAmount &&
+      request.amount <= r.maxAmount;
 
-  console.log('[computeBestRoute] Eligible rates:', eligible.length);
+    console.log(
+      `[computeBestRoute] Rate ${r.anchorId}: ${r.fromCurrency}→${r.toCurrency} (${r.destinationCountry}) min=${r.minAmount} max=${r.maxAmount} - ${matches ? "MATCH" : "NO MATCH"}`,
+    );
+    return matches;
+  });
+
+  console.log("[computeBestRoute] Eligible rates:", eligible.length);
 
   if (eligible.length === 0) return null;
 
@@ -95,9 +95,9 @@ export function computeBestRoute(
   const avgCost =
     results.reduce((sum, r) => sum + r.totalCost, 0) / results.length;
   const savingsVsAverage =
-    avgCost > 0
-      ? parseFloat((((avgCost - best.totalCost) / avgCost) * 100).toFixed(2))
-      : 0;
+    avgCost > 0 ?
+      parseFloat((((avgCost - best.totalCost) / avgCost) * 100).toFixed(2))
+    : 0;
 
   return { ...best, savingsVsAverage };
 }

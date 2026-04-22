@@ -35,7 +35,10 @@ export async function createTx(req: AuthRequest, res: Response): Promise<void> {
   if (!route) {
     res.status(404).json({
       success: false,
-      error: { code: "NO_ROUTE_FOUND", message: "No anchor supports this route" },
+      error: {
+        code: "NO_ROUTE_FOUND",
+        message: "No anchor supports this route",
+      },
     });
     return;
   }
@@ -49,7 +52,7 @@ export async function createTx(req: AuthRequest, res: Response): Promise<void> {
         rate.toCurrency === toCurrency &&
         rate.destinationCountry === destinationCountry &&
         amount >= rate.minAmount &&
-        amount <= rate.maxAmount
+        amount <= rate.maxAmount,
     );
 
     if (!anchorEligible) {
@@ -67,21 +70,24 @@ export async function createTx(req: AuthRequest, res: Response): Promise<void> {
   const selectedAnchorId = anchorId || route.anchorId;
 
   let executionResult;
-  
+
   // Check if this is a demo anchor (URL contains 'example.com' or 'demo')
-  const isDemoAnchor = anchorId?.includes('demo') || anchorId?.includes('example');
-  
+  const isDemoAnchor =
+    anchorId?.includes("demo") || anchorId?.includes("example");
+
   if (isDemoAnchor) {
     // Mock execution for demo anchors - skip real API call
-    console.log(`[Demo Mode] Simulating SEP-31 transaction for anchor: ${selectedAnchorId}`);
+    console.log(
+      `[Demo Mode] Simulating SEP-31 transaction for anchor: ${selectedAnchorId}`,
+    );
     executionResult = {
       externalTxId: `demo-tx-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-      externalStatus: 'completed',
+      externalStatus: "completed",
       stellarTxHash: `demo-hash-${Math.random().toString(36).substring(2, 15)}`,
       raw: {
-        status: 'completed',
+        status: "completed",
         id: `demo-transaction-${Date.now()}`,
-        message: 'Demo transaction - no real execution',
+        message: "Demo transaction - no real execution",
       },
     };
   } else {
@@ -127,7 +133,10 @@ export async function createTx(req: AuthRequest, res: Response): Promise<void> {
     destinationCountry,
     recipientAddress,
     recipientInfo,
-    status: executionResult.externalStatus === "completed" ? "completed" : "processing",
+    status:
+      executionResult.externalStatus === "completed" ?
+        "completed"
+      : "processing",
     stellarTxHash: executionResult.stellarTxHash ?? undefined,
     externalTxId: executionResult.externalTxId ?? undefined,
     externalStatus: executionResult.externalStatus ?? undefined,
@@ -138,13 +147,20 @@ export async function createTx(req: AuthRequest, res: Response): Promise<void> {
 }
 
 /** GET /transactions — list user's transactions. */
-export async function listUserTransactions(req: AuthRequest, res: Response): Promise<void> {
+export async function listUserTransactions(
+  req: AuthRequest,
+  res: Response,
+): Promise<void> {
   const userId = req.walletAddress!;
   const result = queryTransactionsSchema.safeParse(req.query);
   const page = result.success ? result.data.page : 1;
   const limit = result.success ? result.data.limit : 20;
 
-  const { transactions, total } = await getUserTransactions(userId, page, limit);
+  const { transactions, total } = await getUserTransactions(
+    userId,
+    page,
+    limit,
+  );
   res.status(200).json({
     success: true,
     data: { transactions, pagination: { page, limit, total } },
