@@ -12,8 +12,14 @@ services:
       - REDIS_URL=redis://redis:6379
       - JWT_SECRET=dev-secret-change-me
       - JWT_EXPIRY_HOURS=24
+      - SESSION_COOKIE_NAME=remitflow_session
       - STELLAR_NETWORK=testnet
       - STELLAR_RPC_URL=https://soroban-testnet.stellar.org
+      - STELLAR_HORIZON_URL=https://horizon-testnet.stellar.org
+      - SOROBAN_CONTRACT_ADDRESS=CAN4U3NRPWV7IPDUSKWAYMTHWNSFH4ZRJGA7KMEDKLYJCJCCJNV6TXF7
+      - SEP10_HOME_DOMAIN=localhost
+      - SEP10_WEB_AUTH_DOMAIN=localhost
+      - SEP10_SERVER_SECRET=SAC2T4LY4EOY35VZDBNBORDDLXA56S5FERIBTXXPTES2VJH5QFK2DODN
       - CORS_ORIGINS=http://localhost:3000
     depends_on:
       db:
@@ -35,26 +41,23 @@ services:
       - NODE_ENV=development
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/remiflow
       - REDIS_URL=redis://redis:6379
+      - ORACLE_USE_RATE_CALLBACK_ONLY=true
       - SOROBAN_RPC_URL=https://soroban-testnet.stellar.org
       - SOROBAN_NETWORK_PASSPHRASE=Test SDF Network ; September 2015
-      - SOROBAN_CONTRACT_ADDRESS=
-      - ORACLE_SECRET_KEY=
+      - SOROBAN_CONTRACT_ADDRESS=CAN4U3NRPWV7IPDUSKWAYMTHWNSFH4ZRJGA7KMEDKLYJCJCCJNV6TXF7
+      - ORACLE_SECRET_KEY=412b18e689dc5f11fc8ca91a179a18e25ac0fa430cd5656074127df914bbad65
+      - ANCHOR_CONFIGS=test_anchor_colombia|https://api.example.com|test-token-123 
       - POLL_INTERVAL_MINUTES=5
       - MAX_DEVIATION_PERCENT=5
       - MAX_CONSECUTIVE_FAILURES=3
     depends_on:
+      backend:
+        condition: service_healthy
       db:
         condition: service_healthy
       redis:
         condition: service_started
     restart: unless-stopped
-    volumes:
-      - ../oracle/src:/app/src
-    command: >
-      sh -c "
-        pnpm install &&
-        pnpm dev
-      "
 
   # ── PostgreSQL ───────────────────────────────────────────────────
   db:
