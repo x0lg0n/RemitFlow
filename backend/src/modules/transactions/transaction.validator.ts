@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createTransactionSchema = z.object({
-  anchorId: z.string().min(1),
+  anchorId: z.string().min(1).optional(),
   /** Amount in minor units. */
   amount: z.number().int().positive(),
   fromCurrency: z

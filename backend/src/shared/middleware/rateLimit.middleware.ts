@@ -6,6 +6,9 @@ export const rateLimiter = rateLimit({
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) =>
+    req.path === "/rate" &&
+    req.header("x-remitflow-internal-client") === "oracle",
   message: {
     success: false,
     error: {

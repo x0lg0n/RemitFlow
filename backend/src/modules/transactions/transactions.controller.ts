@@ -4,9 +4,13 @@ import {
   getUserTransactions,
   getTransactionById,
 } from "./transaction.service";
-import { findBestRoute } from "../rates/rate.service";
+import { findBestRoute, getAllActiveRates } from "../rates/rate.service";
 import { AuthRequest } from "../../shared/middleware/auth.middleware";
 import { queryTransactionsSchema } from "./transaction.validator";
+import {
+  executeSep31Transaction,
+  Sep31ExecutionError,
+} from "./sep31-execution.service";
 
 /** POST /transactions — create a new remittance transaction. */
 export async function createTx(req: AuthRequest, res: Response): Promise<void> {
@@ -36,9 +40,86 @@ export async function createTx(req: AuthRequest, res: Response): Promise<void> {
     return;
   }
 
+  if (anchorId) {
+    const rates = await getAllActiveRates();
+    const anchorEligible = rates.some(
+      (rate) =>
+        rate.anchorId === anchorId &&
+        rate.fromCurrency === fromCurrency &&
+        rate.toCurrency === toCurrency &&
+        rate.destinationCountry === destinationCountry &&
+        amount >= rate.minAmount &&
+        amount <= rate.maxAmount
+    );
+
+    if (!anchorEligible) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: "INVALID_ANCHOR_SELECTION",
+          message: "Selected anchor does not support this route or amount",
+        },
+      });
+      return;
+    }
+  }
+
+  const selectedAnchorId = anchorId || route.anchorId;
+
+  let executionResult;
+  
+  // Check if this is a demo anchor (URL contains 'example.com' or 'demo')
+  const isDemoAnchor = anchorId?.includes('demo') || anchorId?.includes('example');
+  
+  if (isDemoAnchor) {
+    // Mock execution for demo anchors - skip real API call
+    console.log(`[Demo Mode] Simulating SEP-31 transaction for anchor: ${selectedAnchorId}`);
+    executionResult = {
+      externalTxId: `demo-tx-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      externalStatus: 'completed',
+      stellarTxHash: `demo-hash-${Math.random().toString(36).substring(2, 15)}`,
+      raw: {
+        status: 'completed',
+        id: `demo-transaction-${Date.now()}`,
+        message: 'Demo transaction - no real execution',
+      },
+    };
+  } else {
+    // Real execution for production anchors
+    try {
+      executionResult = await executeSep31Transaction({
+        anchorId: selectedAnchorId,
+        userId,
+        amount,
+        fromCurrency,
+        toCurrency,
+        destinationCountry,
+        recipientAddress,
+        recipientInfo,
+      });
+    } catch (error) {
+      if (error instanceof Sep31ExecutionError) {
+        res.status(error.statusCode).json({
+          success: false,
+          error: { code: error.code, message: error.message },
+        });
+        return;
+      }
+
+      res.status(502).json({
+        success: false,
+        error: {
+          code: "SEP31_EXECUTION_FAILED",
+          message: "Failed to execute transaction with selected anchor",
+        },
+      });
+      return;
+    }
+  }
+
   const tx = await createTransaction({
     userId,
-    anchorId: anchorId || route.anchorId,
+    anchorId: selectedAnchorId,
     amount,
     fee: route.totalFee,
     fromCurrency,
@@ -46,6 +127,11 @@ export async function createTx(req: AuthRequest, res: Response): Promise<void> {
     destinationCountry,
     recipientAddress,
     recipientInfo,
+    status: executionResult.externalStatus === "completed" ? "completed" : "processing",
+    stellarTxHash: executionResult.stellarTxHash ?? undefined,
+    externalTxId: executionResult.externalTxId ?? undefined,
+    externalStatus: executionResult.externalStatus ?? undefined,
+    externalPayload: executionResult.raw ?? undefined,
   });
 
   res.status(201).json({ success: true, data: { transaction: tx } });

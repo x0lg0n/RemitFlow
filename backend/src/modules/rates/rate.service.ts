@@ -44,15 +44,24 @@ export function computeBestRoute(
   request: RateRequest
 ): BestRouteResponse | null {
 
+  console.log('[computeBestRoute] Request:', JSON.stringify(request));
+  console.log('[computeBestRoute] Available rates count:', rates.length);
+
   // Filter by corridor, destination country, and amount range.
   const eligible = rates.filter(
-    (r) =>
-      r.fromCurrency === request.fromCurrency &&
-      r.toCurrency === request.toCurrency &&
-      r.destinationCountry === request.destinationCountry &&
-      request.amount >= r.minAmount &&
-      request.amount <= r.maxAmount
+    (r) => {
+      const matches = r.fromCurrency === request.fromCurrency &&
+        r.toCurrency === request.toCurrency &&
+        r.destinationCountry === request.destinationCountry &&
+        request.amount >= r.minAmount &&
+        request.amount <= r.maxAmount;
+      
+      console.log(`[computeBestRoute] Rate ${r.anchorId}: ${r.fromCurrency}→${r.toCurrency} (${r.destinationCountry}) min=${r.minAmount} max=${r.maxAmount} - ${matches ? 'MATCH' : 'NO MATCH'}`);
+      return matches;
+    }
   );
+
+  console.log('[computeBestRoute] Eligible rates:', eligible.length);
 
   if (eligible.length === 0) return null;
 

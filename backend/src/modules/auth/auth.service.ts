@@ -12,6 +12,8 @@ import { pool } from "../../shared/config/database";
 const CHALLENGE_TTL_SECONDS = 300; // 5 minutes
 const JWT_EXPIRY_HOURS = parseInt(process.env.JWT_EXPIRY_HOURS ?? "24", 10);
 
+const SEP10_SERVER_SECRET = process.env.SEP10_SERVER_SECRET;
+
 const STELLAR_NETWORK = process.env.STELLAR_NETWORK === "mainnet" ? "mainnet" : "testnet";
 const NETWORK_PASSPHRASE =
   STELLAR_NETWORK === "mainnet" ? Networks.PUBLIC : Networks.TESTNET;
@@ -141,7 +143,8 @@ export async function verifyChallenge(
 }
 
 function getServerKeypair(): Keypair {
-  const serverSecret = process.env.SEP10_SERVER_SECRET;
+  const serverSecret = SEP10_SERVER_SECRET;
+  console.log(serverSecret);
   if (!serverSecret) {
     throw new Error("SEP10_SERVER_SECRET not configured");
   }

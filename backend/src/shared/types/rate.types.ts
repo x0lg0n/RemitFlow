@@ -46,10 +46,10 @@ export interface RateRow {
   from_currency: string;
   to_currency: string;
   destination_country: string;
-  fee_percent: number;
-  fx_rate: number;
-  min_amount: number;
-  max_amount: number;
+  fee_percent: string; // PostgreSQL NUMERIC returns as string
+  fx_rate: string;     // PostgreSQL NUMERIC returns as string
+  min_amount: string;  // PostgreSQL BIGINT returns as string
+  max_amount: string;  // PostgreSQL BIGINT returns as string
   fetched_at: Date;
   expires_at: Date;
   name: string;
@@ -57,7 +57,10 @@ export interface RateRow {
 
 /** Convert a database rate row to a clean AnchorRate. */
 export function rowToAnchorRate(row: RateRow): AnchorRate {
-  const feeBps = Math.round(row.fee_percent * 100);
+  const feePercent = parseFloat(row.fee_percent as unknown as string);
+  const fxRate = parseFloat(row.fx_rate as unknown as string);
+  const feeBps = Math.round(feePercent * 100);
+  
   return {
     anchorId: row.anchor_id,
     anchorName: row.name,
@@ -65,10 +68,10 @@ export function rowToAnchorRate(row: RateRow): AnchorRate {
     toCurrency: row.to_currency,
     destinationCountry: row.destination_country,
     feeBps,
-    feePercent: row.fee_percent,
-    fxRate: row.fx_rate,
-    minAmount: row.min_amount,
-    maxAmount: row.max_amount,
+    feePercent,
+    fxRate,
+    minAmount: parseInt(row.min_amount as unknown as string, 10),
+    maxAmount: parseInt(row.max_amount as unknown as string, 10),
     lastUpdated: row.fetched_at,
     estimatedArrival: null,
   };
