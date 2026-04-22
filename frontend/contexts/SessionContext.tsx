@@ -28,7 +28,9 @@ interface SessionContextValue {
   logout: () => Promise<void>;
 }
 
-const SessionContext = createContext<SessionContextValue | undefined>(undefined);
+const SessionContext = createContext<SessionContextValue | undefined>(
+  undefined,
+);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const { connect, signChallenge, disconnect } = useWallet();
@@ -58,7 +60,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       const challenge = await createChallenge(address);
       const signedChallengeTx = await signChallenge(
         challenge.challengeTx,
-        challenge.networkPassphrase
+        challenge.networkPassphrase,
       );
 
       const verifyResult = await verifyChallenge(address, signedChallengeTx);
@@ -67,8 +69,19 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       const nextSession = await getSession(verifyResult.token);
       setSession(nextSession);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Authentication failed";
-      setError(message);
+      const message =
+        err instanceof Error ? err.message : "Authentication failed";
+
+      // Don't set error state for user rejection - it's expected behavior
+      const isUserRejection =
+        message.toLowerCase().includes("rejected") ||
+        message.toLowerCase().includes("user denied") ||
+        message.toLowerCase().includes("cancelled");
+
+      if (!isUserRejection) {
+        setError(message);
+      }
+
       throw err;
     } finally {
       setIsLoading(false);
@@ -114,17 +127,22 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const value = useMemo<SessionContextValue>(() => ({
-    session,
-    token,
-    isLoading,
-    error,
-    loginWithWallet,
-    refreshSession,
-    logout,
-  }), [session, token, isLoading, error, loginWithWallet, refreshSession, logout]);
+  const value = useMemo<SessionContextValue>(
+    () => ({
+      session,
+      token,
+      isLoading,
+      error,
+      loginWithWallet,
+      refreshSession,
+      logout,
+    }),
+    [session, token, isLoading, error, loginWithWallet, refreshSession, logout],
+  );
 
-  return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
+  return (
+    <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
+  );
 }
 
 export function useSession(): SessionContextValue {
