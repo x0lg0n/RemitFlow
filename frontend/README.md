@@ -1,36 +1,242 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RemitFlow Frontend 🎨
 
-## Getting Started
+**Next.js 15 web application for cross-border payment routing**
 
-First, run the development server:
+[![Next.js](https://img.shields.io/badge/Built%20with-Next.js%2016-black)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-blue)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind-38B2AC)](https://tailwindcss.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+---
+
+## Overview
+
+The RemitFlow frontend is a modern, responsive web application built with **Next.js 15 (App Router)** that enables users to:
+- Connect their Stellar wallet (Freighter)
+- Compare rates across multiple anchors
+- Send cross-border payments
+- Track transaction history
+- View detailed transaction receipts
+
+**Demo:** http://localhost:3000 (local development)
+
+---
+
+## Features
+
+✅ **Wallet Integration**
+- Freighter wallet connection
+- SEP-10 authentication
+- Automatic session management
+- Multi-account support
+
+✅ **Rate Comparison**
+- Real-time rate updates
+- Multi-anchor comparison table
+- Fee breakdown visualization
+- Best route highlighting
+
+✅ **Payment Sending**
+- Multi-step payment wizard
+- Amount & fee calculation
+- Anchor selection
+- Transaction confirmation
+
+✅ **Transaction Dashboard**
+- Transaction history
+- Status tracking (pending → completed)
+- Receipt generation
+- Export transaction data
+
+✅ **Responsive Design**
+- Mobile-first approach
+- Dark mode support
+- Accessibility (WCAG 2.1 AA)
+- Touch-friendly interface
+
+---
+
+## Quick Start
+
+### Prerequisites
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+✓ Node.js 24.x+
+✓ pnpm 10.29.3+
+✓ Backend running on http://localhost:3001
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
+```bash
+# Install dependencies
+pnpm install
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# .env is already configured
+cat .env
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Start development server
+pnpm dev
+```
 
-## Learn More
+**Open:** http://localhost:3000
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Development
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Commands
+```bash
+# Development server (Turbopack)
+pnpm dev
 
-## Deploy on Vercel
+# Production build
+pnpm build
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Start production build
+pnpm start
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Run tests
+pnpm test
+
+# Watch mode
+pnpm test --watch
+
+# Lint code
+pnpm lint
+```
+
+### Environment Variables
+```env
+# API Configuration
+NEXT_PUBLIC_API_URL=http://localhost:3001
+
+# Stellar Configuration
+NEXT_PUBLIC_STELLAR_NETWORK=testnet
+NEXT_PUBLIC_STELLAR_NETWORK_PASSPHRASE=Test SDF Network ; September 2015
+```
+
+---
+
+## Project Structure
+
+```
+frontend/
+├── app/                     # Next.js App Router
+│   ├── (auth)/             # Authentication routes
+│   ├── (app)/              # Protected app routes
+│   ├── (anchor)/           # Anchor details
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── globals.css
+├── components/             # React components
+│   ├── layout/
+│   ├── rates/
+│   ├── wallet/
+│   ├── transactions/
+│   ├── shared/
+│   └── ui/
+├── contexts/              # React contexts
+│   ├── SessionContext.tsx
+│   └── WalletContext.tsx
+├── hooks/                 # Custom hooks
+│   ├── useSession.ts
+│   ├── useWallet.ts
+│   ├── useRates.ts
+│   └── useTransactions.ts
+├── lib/                   # Utilities
+│   ├── api.ts
+│   ├── freighter.ts
+│   ├── rates.ts
+│   └── currency.ts
+├── types/                 # TypeScript interfaces
+├── public/                # Static assets
+├── next.config.ts         # Next.js config
+├── tailwind.config.ts     # Tailwind config
+└── vitest.config.ts       # Test config
+```
+
+---
+
+## Key Workflows
+
+### 1. Wallet Connection
+```
+Login → Freighter → SEP-10 Challenge → Sign → Verify → Dashboard
+```
+
+### 2. Send Payment
+```
+Amount → Currency Pair → Load Rates → Select Route → Confirm → Submit
+```
+
+### 3. View History
+```
+History Page → Load Transactions → Click Details → View Receipt → Export
+```
+
+---
+
+## Testing
+
+### Run Tests
+```bash
+pnpm test
+```
+
+### Coverage
+```bash
+pnpm test --coverage
+```
+
+**Target Coverage:** 70%+
+
+---
+
+## Deployment
+
+### Vercel
+```bash
+git push origin main  # Auto-deploys
+```
+
+### Docker
+```bash
+docker build -f frontend/Dockerfile -t remitflow-frontend .
+docker run -p 3000:3000 remitflow-frontend
+```
+
+---
+
+## Security
+
+✅ **CSP Headers** - Content Security Policy enforced
+✅ **No Local Storage of Keys** - Freighter wallet only
+✅ **CORS Validation** - Backend API protected
+✅ **Input Validation** - All user inputs validated
+✅ **XSS Prevention** - React auto-escaping
+
+---
+
+## Contributing
+
+See [../CONTRIBUTING.md](../CONTRIBUTING.md) for details.
+
+**Target Coverage:** 70%+  
+**Style:** Functional components + hooks  
+**Testing Framework:** Vitest + React Testing Library
+
+---
+
+## Resources
+
+- [Next.js Docs](https://nextjs.org/docs)
+- [React Docs](https://react.dev)
+- [Tailwind CSS](https://tailwindcss.com)
+- [Stellar Docs](https://developers.stellar.org/docs)
+- [Freighter Wallet](https://github.com/stellar/freighter)
+
+---
+
+## License
+
+MIT License - see [../LICENSE](../LICENSE)
