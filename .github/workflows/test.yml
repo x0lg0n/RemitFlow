@@ -84,7 +84,7 @@ jobs:
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
 
       - name: Upload coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.component }}-coverage
           path: ${{ matrix.component }}/coverage/
@@ -373,7 +373,7 @@ jobs:
           echo "Coverage artifacts have been uploaded for review." >> test-report.md
 
       - name: Upload test report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-report
           path: test-report.md
