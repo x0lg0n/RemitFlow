@@ -12,12 +12,12 @@
 
 ## 🚀 Live Demo & Resources
 
-| Resource              | URL                           | Status      |
-| --------------------- | ----------------------------- | ----------- |
-| 🌐 **Live App**       | https://remitflow.io          | 🟢 Active   |
-| 🔗 **Testnet App**    | https://testnet.remitflow.io  | 🟢 Active   |
-| 📡 **API**            | https://api.remitflow.io      | 🟢 Active   |
-| 📖 **API Docs**       | https://api.remitflow.io/docs | 🟢 Active   |
+| Resource           | URL                           | Status    |
+| ------------------ | ----------------------------- | --------- |
+| 🌐 **Live App**    | https://remitflow.io          | 🟢 Active |
+| 🔗 **Testnet App** | https://testnet.remitflow.io  | 🟢 Active |
+| 📡 **API**         | https://api.remitflow.io      | 🟢 Active |
+| 📖 **API Docs**    | https://api.remitflow.io/docs | 🟢 Active |
 
 ---
 
@@ -28,6 +28,7 @@ We value your input! Help us improve RemitFlow by sharing your experience:
 📝 **[Fill out our Feedback Form](https://forms.gle/WQdUCZrs7FzK2Qa2A)** - Takes only 2 minutes!
 
 Your feedback helps us:
+
 - ✨ Improve user experience
 - 🐛 Identify and fix issues faster
 - 💡 Prioritize new features

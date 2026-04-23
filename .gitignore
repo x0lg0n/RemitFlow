@@ -10,6 +10,8 @@ out/
 # Environment
 .env
 .env.local
+.env.production
+docker/.env
 
 # IDE
 .vscode/
