@@ -13,6 +13,7 @@
 ## Overview
 
 The RemitFlow frontend is a **production-ready**, modern web application built with **Next.js 16 (App Router)** that enables users to:
+
 - Connect their Stellar wallet (Freighter)
 - Browse and activate payment anchors
 - Compare rates across multiple anchors in real-time
@@ -28,18 +29,21 @@ The RemitFlow frontend is a **production-ready**, modern web application built w
 ## Features
 
 ✅ **Wallet Integration**
+
 - Freighter wallet connection
 - SEP-10 authentication
 - Automatic session management
 - User profile management
 
 ✅ **Anchor Marketplace**
+
 - Browse available anchors
 - One-click anchor activation
 - Guided credential setup
 - Anchor status monitoring
 
 ✅ **Rate Comparison**
+
 - Real-time rate updates
 - Multi-anchor comparison table
 - Fee breakdown visualization
@@ -47,6 +51,7 @@ The RemitFlow frontend is a **production-ready**, modern web application built w
 - Corridor filtering and search
 
 ✅ **Payment Sending**
+
 - Multi-step payment wizard
 - Amount & fee calculation
 - Anchor selection
@@ -54,12 +59,14 @@ The RemitFlow frontend is a **production-ready**, modern web application built w
 - Receipt generation
 
 ✅ **Transaction Dashboard**
+
 - Transaction history
 - Status tracking (pending → completed)
 - Savings analytics
 - Export transaction data
 
 ✅ **Professional UI/UX**
+
 - Dark mode design system
 - Glassmorphism effects
 - Smooth animations
@@ -72,6 +79,7 @@ The RemitFlow frontend is a **production-ready**, modern web application built w
 ## Quick Start
 
 ### Prerequisites
+
 ```bash
 ✓ Node.js 24.x+
 ✓ pnpm 10.29.3+
@@ -79,6 +87,7 @@ The RemitFlow frontend is a **production-ready**, modern web application built w
 ```
 
 ### Installation
+
 ```bash
 # Install dependencies
 pnpm install
@@ -97,6 +106,7 @@ pnpm dev
 ## Development
 
 ### Commands
+
 ```bash
 # Development server (Turbopack)
 pnpm dev
@@ -118,6 +128,7 @@ pnpm lint
 ```
 
 ### Environment Variables
+
 ```env
 # API Configuration
 NEXT_PUBLIC_API_URL=http://localhost:3001
@@ -172,16 +183,19 @@ frontend/
 ## Key Workflows
 
 ### 1. Wallet Connection
+
 ```
 Login → Freighter → SEP-10 Challenge → Sign → Verify → Dashboard
 ```
 
 ### 2. Send Payment
+
 ```
 Amount → Currency Pair → Load Rates → Select Route → Confirm → Submit
 ```
 
 ### 3. View History
+
 ```
 History Page → Load Transactions → Click Details → View Receipt → Export
 ```
@@ -191,11 +205,13 @@ History Page → Load Transactions → Click Details → View Receipt → Export
 ## Testing
 
 ### Run Tests
+
 ```bash
 pnpm test
 ```
 
 ### Coverage
+
 ```bash
 pnpm test --coverage
 ```
@@ -207,11 +223,13 @@ pnpm test --coverage
 ## Deployment
 
 ### Vercel
+
 ```bash
 git push origin main  # Auto-deploys
 ```
 
 ### Docker
+
 ```bash
 docker build -f frontend/Dockerfile -t remitflow-frontend .
 docker run -p 3000:3000 remitflow-frontend
