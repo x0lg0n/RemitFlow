@@ -65,30 +65,35 @@ The RemitFlow Oracle is a **production-grade** rate aggregation service that con
 ## Features
 
 ### 🔄 Rate Fetching
+
 - **Parallel Anchor Polling** - Fetch from all anchors simultaneously
 - **Promise.allSettled** - One anchor failure doesn't block others
 - **Configurable Intervals** - Adjustable polling frequency
 - **Request Timeout Handling** - Graceful timeout management
 
 ### ✅ Rate Validation
+
 - **Deviation Detection** - Reject rates deviating >5% from median
 - **Staleness Checks** - Skip rates older than 10 minutes
 - **Outlier Removal** - Statistical anomaly detection
 - **Multi-Source Consensus** - Validate across multiple anchors
 
 ### 🛡️ Circuit Breakers
+
 - **Failure Detection** - Track consecutive failures per anchor
 - **Automatic Pause** - Stop polling after 3 consecutive failures
 - **Recovery Testing** - Periodically retry failed anchors
 - **Alert Notifications** - Log failures for monitoring
 
 ### 💾 Caching Strategy
+
 - **Redis Integration** - 5-minute TTL cache
 - **Cache Warming** - Pre-populate on startup
 - **Cache Invalidation** - Update on rate changes
 - **Fallback Mechanism** - Serve stale cache if anchor down
 
 ### 📊 Monitoring & Logging
+
 - **Structured Logging** - JSON format for log aggregation
 - **Performance Metrics** - Fetch times, validation results
 - **Error Tracking** - Detailed error context
@@ -219,7 +224,7 @@ oracle/
 
 ```typescript
 // Every 5 minutes
-scheduler.schedule('*/5 * * * *', async () => {
+scheduler.schedule("*/5 * * * *", async () => {
   await fetchAllAnchorRates();
 });
 ```
@@ -228,31 +233,31 @@ scheduler.schedule('*/5 * * * *', async () => {
 
 ```typescript
 const results = await Promise.allSettled(
-  anchors.map(anchor => fetchAnchorRates(anchor))
+  anchors.map((anchor) => fetchAnchorRates(anchor)),
 );
 
 // Process successful fetches
 const successful = results
-  .filter(r => r.status === 'fulfilled')
-  .map(r => r.value);
+  .filter((r) => r.status === "fulfilled")
+  .map((r) => r.value);
 
 // Log failures
 const failed = results
-  .filter(r => r.status === 'rejected')
-  .forEach(r => logger.error(r.reason));
+  .filter((r) => r.status === "rejected")
+  .forEach((r) => logger.error(r.reason));
 ```
 
 ### 3. Validation
 
 ```typescript
-const validated = rates.filter(rate => {
+const validated = rates.filter((rate) => {
   // Check staleness
   if (isStale(rate.timestamp)) return false;
-  
+
   // Check deviation from median
   const deviation = calculateDeviation(rate, median);
   if (deviation > DEVIATION_THRESHOLD) return false;
-  
+
   return true;
 });
 ```
@@ -284,20 +289,20 @@ export class VibrantFetcher extends BaseFetcher {
   async fetchRates(anchor: Anchor): Promise<AnchorRate[]> {
     const response = await fetch(`${anchor.baseUrl}/rates`, {
       headers: {
-        'Authorization': `Bearer ${anchor.authToken}`
-      }
+        Authorization: `Bearer ${anchor.authToken}`,
+      },
     });
-    
+
     const data = await response.json();
-    
-    return data.rates.map(rate => ({
+
+    return data.rates.map((rate) => ({
       anchorId: anchor.id,
       fromCurrency: rate.from,
       toCurrency: rate.to,
       buyRate: rate.buy,
       sellRate: rate.sell,
       feePercent: rate.fee,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }));
   }
 }
@@ -345,21 +350,21 @@ Oracle automatically starts polling new anchors on next cycle.
 class CircuitBreaker {
   private failures: Map<string, number> = new Map();
   private readonly MAX_FAILURES = 3;
-  
+
   recordFailure(anchorId: string): void {
     const count = this.failures.get(anchorId) || 0;
     this.failures.set(anchorId, count + 1);
-    
+
     if (count + 1 >= this.MAX_FAILURES) {
       this.pauseAnchor(anchorId);
       logger.warn(`Anchor ${anchorId} paused after ${count + 1} failures`);
     }
   }
-  
+
   recordSuccess(anchorId: string): void {
     this.failures.delete(anchorId);
   }
-  
+
   isPaused(anchorId: string): boolean {
     return (this.failures.get(anchorId) || 0) >= this.MAX_FAILURES;
   }
@@ -400,13 +405,13 @@ pnpm test:coverage
 export const mockAnchorResponse = {
   rates: [
     {
-      from: 'USD',
-      to: 'COP',
-      buy: 4200.50,
+      from: "USD",
+      to: "COP",
+      buy: 4200.5,
       sell: 4195.25,
-      fee: 1.5
-    }
-  ]
+      fee: 1.5,
+    },
+  ],
 };
 ```
 
@@ -496,15 +501,15 @@ kind: Deployment
 metadata:
   name: remitflow-oracle
 spec:
-  replicas: 1  # Single instance to avoid duplicate polling
+  replicas: 1 # Single instance to avoid duplicate polling
   template:
     spec:
       containers:
-      - name: oracle
-        image: remitflow-oracle:latest
-        envFrom:
-        - secretRef:
-            name: oracle-secrets
+        - name: oracle
+          image: remitflow-oracle:latest
+          envFrom:
+            - secretRef:
+                name: oracle-secrets
 ```
 
 ---
