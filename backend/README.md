@@ -28,6 +28,7 @@ The RemitFlow backend is a **production-ready** Express.js API server that power
 ## Features
 
 ### 🔐 Authentication & Security
+
 - SEP-10 challenge-response authentication
 - JWT token management with refresh
 - Role-based access control (user, anchor, admin)
@@ -35,24 +36,28 @@ The RemitFlow backend is a **production-ready** Express.js API server that power
 - Input validation with Zod schemas
 
 ### 🏦 Anchor Management
+
 - Anchor registration and activation
 - Credential validation and storage
 - Health monitoring and status tracking
 - Marketplace integration endpoints
 
 ### 💱 Rate Services
+
 - Real-time rate aggregation
 - Corridor discovery and mapping
 - Historical rate tracking
 - Rate comparison algorithms
 
 ### 💸 Payment Processing
+
 - SEP-31 payment initiation
 - Transaction status tracking
 - Callback handling
 - Receipt generation
 
 ### 📊 Analytics & Reporting
+
 - Transaction analytics
 - Savings calculations
 - Performance metrics
@@ -194,56 +199,56 @@ backend/
 
 ### Authentication
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/auth/challenge` | Get SEP-10 challenge | ❌ |
-| POST | `/auth/verify` | Verify signed challenge | ❌ |
-| POST | `/auth/refresh` | Refresh JWT token | ✅ |
-| POST | `/auth/logout` | Logout and revoke token | ✅ |
+| Method | Endpoint          | Description             | Auth |
+| ------ | ----------------- | ----------------------- | ---- |
+| GET    | `/auth/challenge` | Get SEP-10 challenge    | ❌   |
+| POST   | `/auth/verify`    | Verify signed challenge | ❌   |
+| POST   | `/auth/refresh`   | Refresh JWT token       | ✅   |
+| POST   | `/auth/logout`    | Logout and revoke token | ✅   |
 
 ### Anchors
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/anchors` | List all anchors | ❌ |
-| GET | `/anchors/:id` | Get anchor details | ❌ |
-| POST | `/anchors` | Register new anchor | ✅ Admin |
-| PUT | `/anchors/:id` | Update anchor | ✅ Admin |
-| DELETE | `/anchors/:id` | Deactivate anchor | ✅ Admin |
-| GET | `/anchors/:id/status` | Check anchor health | ✅ |
+| Method | Endpoint              | Description         | Auth     |
+| ------ | --------------------- | ------------------- | -------- |
+| GET    | `/anchors`            | List all anchors    | ❌       |
+| GET    | `/anchors/:id`        | Get anchor details  | ❌       |
+| POST   | `/anchors`            | Register new anchor | ✅ Admin |
+| PUT    | `/anchors/:id`        | Update anchor       | ✅ Admin |
+| DELETE | `/anchors/:id`        | Deactivate anchor   | ✅ Admin |
+| GET    | `/anchors/:id/status` | Check anchor health | ✅       |
 
 ### Rates
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/rates` | Get all active rates | ❌ |
-| GET | `/rates/best` | Find best route | ❌ |
-| GET | `/rates/history` | Historical rates | ❌ |
-| POST | `/rates/refresh` | Trigger rate update | ✅ Admin |
+| Method | Endpoint         | Description          | Auth     |
+| ------ | ---------------- | -------------------- | -------- |
+| GET    | `/rates`         | Get all active rates | ❌       |
+| GET    | `/rates/best`    | Find best route      | ❌       |
+| GET    | `/rates/history` | Historical rates     | ❌       |
+| POST   | `/rates/refresh` | Trigger rate update  | ✅ Admin |
 
 ### Corridors
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/corridors` | List available corridors | ❌ |
-| GET | `/corridors/:from/:to` | Get corridor rates | ❌ |
+| Method | Endpoint               | Description              | Auth |
+| ------ | ---------------------- | ------------------------ | ---- |
+| GET    | `/corridors`           | List available corridors | ❌   |
+| GET    | `/corridors/:from/:to` | Get corridor rates       | ❌   |
 
 ### Payments
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/payments/initiate` | Start new payment | ✅ |
-| GET | `/payments/:id` | Get payment status | ✅ |
-| GET | `/payments` | User payment history | ✅ |
-| POST | `/payments/:id/callback` | SEP-31 callback | ✅ Anchor |
+| Method | Endpoint                 | Description          | Auth      |
+| ------ | ------------------------ | -------------------- | --------- |
+| POST   | `/payments/initiate`     | Start new payment    | ✅        |
+| GET    | `/payments/:id`          | Get payment status   | ✅        |
+| GET    | `/payments`              | User payment history | ✅        |
+| POST   | `/payments/:id/callback` | SEP-31 callback      | ✅ Anchor |
 
 ### User Profile
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/users/me` | Get current user | ✅ |
-| PUT | `/users/me` | Update profile | ✅ |
-| GET | `/users/me/stats` | User statistics | ✅ |
+| Method | Endpoint          | Description      | Auth |
+| ------ | ----------------- | ---------------- | ---- |
+| GET    | `/users/me`       | Get current user | ✅   |
+| PUT    | `/users/me`       | Update profile   | ✅   |
+| GET    | `/users/me/stats` | User statistics  | ✅   |
 
 ---
 
@@ -336,6 +341,7 @@ pnpm migrate:reset
 ### Schema
 
 Key tables:
+
 - `users` - User accounts and wallet addresses
 - `anchors` - Anchor configurations and credentials
 - `rates` - Exchange rates with timestamps
@@ -356,7 +362,7 @@ Key tables:
 ✅ **Input Validation** - Zod schemas on all endpoints  
 ✅ **SQL Parameterization** - No injection vulnerabilities  
 ✅ **Helmet Headers** - Security headers on all responses  
-✅ **Error Handling** - No stack traces in production  
+✅ **Error Handling** - No stack traces in production
 
 ### Best Practices
 
@@ -447,13 +453,13 @@ spec:
   template:
     spec:
       containers:
-      - name: backend
-        image: remitflow-backend:latest
-        ports:
-        - containerPort: 3001
-        envFrom:
-        - secretRef:
-            name: backend-secrets
+        - name: backend
+          image: remitflow-backend:latest
+          ports:
+            - containerPort: 3001
+          envFrom:
+            - secretRef:
+                name: backend-secrets
 ```
 
 ---
