@@ -4,18 +4,19 @@ services:
     build:
       context: ../backend
       dockerfile: Dockerfile
+      target: production
     ports:
       - "3001:3001"
     env_file:
       - .env
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
+      - NODE_ENV=production
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=${REDIS_URL}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRY_HOURS=${JWT_EXPIRY_HOURS:-24}
       - SESSION_COOKIE_NAME=${SESSION_COOKIE_NAME:-remitflow_session}
-      - STELLAR_NETWORK=${STELLAR_NETWORK:-testnet}
+      - STELLAR_NETWORK=${STELLAR_NETWORK:-mainnet}
       - STELLAR_RPC_URL=${STELLAR_RPC_URL}
       - STELLAR_HORIZON_URL=${STELLAR_HORIZON_URL}
       - SOROBAN_CONTRACT_ADDRESS=${SOROBAN_CONTRACT_ADDRESS}
@@ -30,19 +31,35 @@ services:
         condition: service_started
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001/health"]
-      interval: 10s
-      timeout: 5s
+      interval: 30s
+      timeout: 10s
       retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # ── Rate Oracle ──────────────────────────────────────────────────
   oracle:
     build:
       context: ../oracle
       dockerfile: Dockerfile
+      target: production
     env_file:
       - .env
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
+      - NODE_ENV=production
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=${REDIS_URL}
       - ORACLE_USE_RATE_CALLBACK_ONLY=${ORACLE_USE_RATE_CALLBACK_ONLY:-true}
@@ -62,6 +79,19 @@ services:
       redis:
         condition: service_started
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # ── PostgreSQL ───────────────────────────────────────────────────
   db:
@@ -79,10 +109,24 @@ services:
       - ../database/migrations:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 20s
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # ── Redis ────────────────────────────────────────────────────────
   redis:
@@ -91,8 +135,36 @@ services:
       - "6379:6379"
     volumes:
       - redisdata:/data
-    command: redis-server --appendonly yes
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   pgdata:
+    driver: local
   redisdata:
+    driver: local
+
+# ── Production Networks ────────────────────────────────────────────
+networks:
+  default:
+    driver: bridge
+    name: remitflow-network
