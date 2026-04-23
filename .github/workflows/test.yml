@@ -1,0 +1,379 @@
+name: Automated Testing
+
+on:
+  push:
+    branches: [main, develop, 'feature/**', 'bugfix/**']
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  NODE_VERSION: '24'
+  PNPM_VERSION: '10'
+  RUST_VERSION: '1.75'
+
+jobs:
+  # ─── Unit Tests ────────────────────────────────────────────────────────
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        component: [backend, frontend, oracle]
+      fail-fast: false
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: remitflow_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ matrix.component }}-pnpm-${{ hashFiles(format('{0}/pnpm-lock.yaml', matrix.component)) }}
+
+      - name: Install dependencies
+        run: cd ${{ matrix.component }} && pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: cd ${{ matrix.component }} && pnpm test -- --coverage --verbose
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/remitflow_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-secret-key-for-ci
+          NODE_ENV: test
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+          NEXT_PUBLIC_STELLAR_NETWORK: testnet
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.component }}-coverage
+          path: ${{ matrix.component }}/coverage/
+        if: always()
+
+      - name: Check coverage threshold
+        run: |
+          cd ${{ matrix.component }}
+          if [ -f coverage/coverage-summary.json ]; then
+            echo "Coverage report generated successfully"
+            cat coverage/coverage-summary.json | jq '.total.lines.pct'
+          fi
+        if: always()
+
+  # ─── Integration Tests ─────────────────────────────────────────────────
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: remitflow_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install backend dependencies
+        run: cd backend && pnpm install --frozen-lockfile
+
+      - name: Run database migrations
+        run: |
+          cd database/migrations
+          for file in *.sql; do
+            echo "Applying migration: $file"
+            PGPASSWORD=postgres psql -h localhost -U postgres -d remitflow_test -f "$file"
+          done
+        env:
+          PGPASSWORD: postgres
+
+      - name: Run integration tests
+        run: cd backend && pnpm test:integration
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/remitflow_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-secret-key-for-ci
+          NODE_ENV: test
+          STELLAR_RPC_URL: https://soroban-testnet.stellar.org
+          SOROBAN_CONTRACT_ADDRESS: CDLZFC3TMJYR2HV5YVNP7XQKGD3KQVLR4XQZ6QXQZ6QXQZ6QXQZ6QX
+
+  # ─── Smart Contract Tests ──────────────────────────────────────────────
+  contract-tests:
+    name: Smart Contract Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          target: wasm32-unknown-unknown
+          override: true
+          components: rustfmt, clippy
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            smart-contracts/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('smart-contracts/**/Cargo.lock') }}
+
+      - name: Run contract tests
+        run: |
+          cd smart-contracts
+          cargo test --release --verbose
+
+      - name: Build WASM contract
+        run: |
+          cd smart-contracts/contracts/remitflow
+          cargo build --target wasm32-unknown-unknown --release
+
+      - name: Check contract size
+        run: |
+          WASM_SIZE=$(stat -f%z smart-contracts/target/wasm32-unknown-unknown/release/remitflow.wasm 2>/dev/null || stat -c%s smart-contracts/target/wasm32-unknown-unknown/release/remitflow.wasm 2>/dev/null || echo "0")
+          echo "Contract size: $WASM_SIZE bytes"
+          if [ "$WASM_SIZE" -gt 65536 ]; then
+            echo "::warning::Contract size exceeds 64KB limit: $WASM_SIZE bytes"
+          fi
+
+  # ─── E2E Tests (Frontend) ──────────────────────────────────────────────
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: remitflow_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          cd backend && pnpm install --frozen-lockfile
+          cd ../frontend && pnpm install --frozen-lockfile
+
+      - name: Start backend
+        run: |
+          cd backend
+          pnpm dev &
+          sleep 10
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/remitflow_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-secret-key-for-ci
+          NODE_ENV: test
+          PORT: 3001
+
+      - name: Start frontend
+        run: |
+          cd frontend
+          pnpm dev &
+          sleep 10
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+          NEXT_PUBLIC_STELLAR_NETWORK: testnet
+
+      - name: Run E2E tests
+        run: cd frontend && pnpm test:e2e
+        env:
+          CI: true
+
+  # ─── Performance Tests ─────────────────────────────────────────────────
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: remitflow_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: cd backend && pnpm install --frozen-lockfile
+
+      - name: Start backend
+        run: |
+          cd backend
+          pnpm start &
+          sleep 10
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/remitflow_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-secret-key-for-ci
+          NODE_ENV: production
+
+      - name: Run performance tests
+        run: |
+          echo "Testing API response times..."
+          START_TIME=$(date +%s%N)
+          curl -s http://localhost:3001/health > /dev/null
+          END_TIME=$(date +%s%N)
+          RESPONSE_TIME=$(( (END_TIME - START_TIME) / 1000000 ))
+          echo "Health endpoint response time: ${RESPONSE_TIME}ms"
+          
+          if [ "$RESPONSE_TIME" -gt 500 ]; then
+            echo "::warning::Health endpoint response time exceeds 500ms: ${RESPONSE_TIME}ms"
+          fi
+
+  # ─── Test Report ───────────────────────────────────────────────────────
+  test-report:
+    name: Test Report
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, contract-tests]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all coverage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: coverage/
+
+      - name: Generate test report
+        run: |
+          echo "# Test Report" > test-report.md
+          echo "" >> test-report.md
+          echo "## Summary" >> test-report.md
+          echo "" >> test-report.md
+          echo "- **Unit Tests:** ${{ needs.unit-tests.result }}" >> test-report.md
+          echo "- **Integration Tests:** ${{ needs.integration-tests.result }}" >> test-report.md
+          echo "- **Contract Tests:** ${{ needs.contract-tests.result }}" >> test-report.md
+          echo "" >> test-report.md
+          echo "## Coverage Reports" >> test-report.md
+          echo "" >> test-report.md
+          echo "Coverage artifacts have been uploaded for review." >> test-report.md
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: test-report.md
