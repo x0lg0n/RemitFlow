@@ -9,7 +9,8 @@
     "start": "node dist/index.js",
     "lint": "eslint src/",
     "test": "jest --config jest.config.ts",
-    "test:watch": "jest --config jest.config.ts --watch"
+    "test:watch": "jest --config jest.config.ts --watch",
+    "migrate": "ts-node scripts/run-migrations.ts"
   },
   "dependencies": {
     "@stellar/stellar-sdk": "15.0.1",

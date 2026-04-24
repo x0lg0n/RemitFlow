@@ -121,23 +121,7 @@ jobs:
         run: cd backend && pnpm install --frozen-lockfile
 
       - name: Run database migrations
-        run: |
-          cd backend
-          pnpm exec ts-node -e "
-            const { pool } = require('./src/shared/config/database');
-            const fs = require('fs');
-            const path = require('path');
-            const migrationsDir = path.join(__dirname, '../database/migrations');
-            const files = fs.readdirSync(migrationsDir).filter(f => f.endsWith('.sql')).sort();
-            (async () => {
-              for (const file of files) {
-                const sql = fs.readFileSync(path.join(migrationsDir, file), 'utf8');
-                await pool.query(sql);
-                console.log('Applied migration:', file);
-              }
-              await pool.end();
-            })();
-          "
+        run: cd backend && pnpm migrate
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/remitflow_test
 
