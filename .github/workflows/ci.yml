@@ -126,7 +126,7 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/remitflow_test
 
       - name: Run backend tests
-        run: cd backend && pnpm test -- --coverage
+        run: cd backend && pnpm exec jest --config jest.config.ts --coverage
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/remitflow_test
           REDIS_URL: redis://localhost:6379
@@ -169,7 +169,7 @@ jobs:
         run: cd frontend && pnpm install --frozen-lockfile
 
       - name: Run frontend tests
-        run: cd frontend && pnpm test -- --coverage
+        run: cd frontend && pnpm test
 
       - name: Build frontend
         run: cd frontend && pnpm build
@@ -238,7 +238,7 @@ jobs:
         run: cd oracle && pnpm install --frozen-lockfile
 
       - name: Run oracle tests
-        run: cd oracle && pnpm test -- --coverage
+        run: cd oracle && pnpm exec jest --passWithNoTests --coverage
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/remitflow_test
           REDIS_URL: redis://localhost:6379
