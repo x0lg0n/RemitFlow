@@ -1,7 +1,6 @@
 import "dotenv/config";
 import { startScheduler } from "./scheduler";
 import { pool } from "./shared/config/database";
-import { redis } from "./shared/config/redis";
 
 async function main(): Promise<void> {
   console.log("RemitFlow Oracle Service starting...");
@@ -13,7 +12,7 @@ async function main(): Promise<void> {
   } catch (err) {
     console.error(
       "PostgreSQL connection failed — oracle will retry on next run:",
-      (err as Error).message
+      (err as Error).message,
     );
   }
 

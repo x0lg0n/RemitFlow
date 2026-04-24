@@ -37,7 +37,6 @@ async function fetchFromRateCallback(
 
     const fxRate = Number(data.price ?? 0);
     const sellAmount = Number(data.sell_amount ?? 0);
-    const buyAmount = Number(data.buy_amount ?? 0);
     const feeAmount = Number(data.fee?.total ?? 0);
 
     if (!Number.isFinite(fxRate) || fxRate <= 0) {
