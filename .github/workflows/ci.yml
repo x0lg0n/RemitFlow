@@ -9,7 +9,7 @@ on:
 env:
   NODE_VERSION: '24'
   PNPM_VERSION: '10'
-  RUST_VERSION: '1.85.0'
+  RUST_VERSION: '1.93.1'
 
 jobs:
   # ─── Lint & Type Check ─────────────────────────────────────────────────
@@ -277,7 +277,7 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('smart-contracts/**/Cargo.lock') }}
 
       - name: Install Soroban CLI
-        run: cargo install --locked soroban-cli --version 21.0.0
+        run: cargo install --locked stellar-cli@26.0.0
 
       - name: Run clippy
         run: |
