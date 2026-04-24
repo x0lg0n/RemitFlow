@@ -8,7 +8,7 @@ Thank you for your interest in contributing to RemitFlow! This document provides
 
 ### 1.1 Prerequisites
 - Node.js 20.x or higher
-- Rust 1.75+ (for Soroban contracts)
+- Rust 1.83+ (for Soroban contracts)
 - Stellar CLI installed
 - Freighter wallet for testing
 

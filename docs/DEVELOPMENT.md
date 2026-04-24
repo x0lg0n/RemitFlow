@@ -32,7 +32,7 @@ Complete guide for setting up your local development environment for RemitFlow.
 | Docker Compose | 2.x+    | Multi-container orchestration         | Included with Docker                   |
 | PostgreSQL     | 15      | Database (via Docker)                 | Included in docker-compose             |
 | Redis          | 7       | Caching (via Docker)                  | Included in docker-compose             |
-| Rust           | 1.75+   | Smart contract development            | [rust-lang.org](https://rust-lang.org) |
+| Rust           | 1.83+   | Smart contract development            | [rust-lang.org](https://rust-lang.org) |
 | Git            | 2.x+    | Version control                       | [git-scm.com](https://git-scm.com)     |
 
 ### Optional Software

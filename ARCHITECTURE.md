@@ -1070,7 +1070,7 @@ MAX_CONSECUTIVE_FAILURES=3
 
 | Technology  | Version | Purpose                          |
 | ----------- | ------- | -------------------------------- |
-| Rust        | 1.75+   | Contract language                |
+| Rust        | 1.83+   | Contract language                |
 | Soroban SDK | Latest  | Stellar smart contract framework |
 | Cargo       | Latest  | Package manager                  |
 | Soroban CLI | Latest  | Deployment, testing              |
