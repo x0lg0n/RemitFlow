@@ -3,14 +3,14 @@
  * Applies all SQL migrations in order from database/migrations/
  */
 
-import { pool } from "./src/shared/config/database";
+import { pool } from "../src/shared/config/database";
 import * as fs from "fs";
 import * as path from "path";
 
 async function runMigrations(): Promise<void> {
   console.log("Starting database migrations...");
 
-  const migrationsDir = path.join(__dirname, "../database/migrations");
+  const migrationsDir = path.join(__dirname, "../../database/migrations");
 
   if (!fs.existsSync(migrationsDir)) {
     console.error(`Migrations directory not found: ${migrationsDir}`);
