@@ -12,7 +12,7 @@ on:
 env:
   NODE_VERSION: '24'
   PNPM_VERSION: '10'
-  RUST_VERSION: '1.75'
+  RUST_VERSION: '1.83'
 
 jobs:
   # ─── Unit Tests ────────────────────────────────────────────────────────
