@@ -14,24 +14,27 @@ async function fetchFromRateCallback(
   anchor: AnchorConfig,
   fromCurrency: string,
   toCurrency: string,
-  destinationCountry: string
+  destinationCountry: string,
 ): Promise<FetchedRate | null> {
   try {
-    const response = await axios.get<RateCallbackResponse>(`${anchor.baseUrl}/rate`, {
-      params: {
-        type: "indicative",
-        sell_asset: `stellar:${fromCurrency}`,
-        buy_asset: `stellar:${toCurrency}`,
-        sell_amount: 1000,
-        destination_country: destinationCountry,
+    const response = await axios.get<RateCallbackResponse>(
+      `${anchor.baseUrl}/rate`,
+      {
+        params: {
+          type: "indicative",
+          sell_asset: `stellar:${fromCurrency}`,
+          buy_asset: `stellar:${toCurrency}`,
+          sell_amount: 1000,
+          destination_country: destinationCountry,
+        },
+        headers: {
+          Authorization: `Bearer ${anchor.authToken}`,
+          "x-remitflow-internal-client": "oracle",
+        },
+        timeout: 5000,
+        validateStatus: (status) => status < 500,
       },
-      headers: {
-        Authorization: `Bearer ${anchor.authToken}`,
-        "x-remitflow-internal-client": "oracle",
-      },
-      timeout: 5000,
-      validateStatus: (status) => status < 500,
-    });
+    );
 
     const { data } = response;
 
@@ -41,7 +44,7 @@ async function fetchFromRateCallback(
 
     if (!Number.isFinite(fxRate) || fxRate <= 0) {
       console.warn(
-        `[${anchor.id}] Rate callback returned no usable quote (${response.status}) for ${fromCurrency}->${toCurrency} ${destinationCountry}`
+        `[${anchor.id}] Rate callback returned no usable quote (${response.status}) for ${fromCurrency}->${toCurrency} ${destinationCountry}`,
       );
       return null;
     }
@@ -62,7 +65,7 @@ async function fetchFromRateCallback(
   } catch (error) {
     console.error(
       `[${anchor.id}] Rate callback fallback failed:`,
-      (error as Error).message
+      (error as Error).message,
     );
     return null;
   }
@@ -76,11 +79,18 @@ export async function fetchAnchorRate(
   anchor: AnchorConfig,
   fromCurrency: string,
   toCurrency: string,
-  destinationCountry: string
+  destinationCountry: string,
 ): Promise<FetchedRate | null> {
-  const rateOnlyMode = (process.env.ORACLE_USE_RATE_CALLBACK_ONLY ?? "false").toLowerCase() === "true";
+  const rateOnlyMode =
+    (process.env.ORACLE_USE_RATE_CALLBACK_ONLY ?? "false").toLowerCase() ===
+    "true";
   if (rateOnlyMode) {
-    return fetchFromRateCallback(anchor, fromCurrency, toCurrency, destinationCountry);
+    return fetchFromRateCallback(
+      anchor,
+      fromCurrency,
+      toCurrency,
+      destinationCountry,
+    );
   }
 
   try {
@@ -108,25 +118,25 @@ export async function fetchAnchorRate(
 
     if (feeResponse.status === "rejected") {
       console.error(
-        `[${anchor.id}] Fee fetch failed: ${feeResponse.reason.message}`
+        `[${anchor.id}] Fee fetch failed: ${feeResponse.reason.message}`,
       );
       return fetchFromRateCallback(
         anchor,
         fromCurrency,
         toCurrency,
-        destinationCountry
+        destinationCountry,
       );
     }
 
     if (quoteResponse.status === "rejected") {
       console.error(
-        `[${anchor.id}] Quote fetch failed: ${quoteResponse.reason.message}`
+        `[${anchor.id}] Quote fetch failed: ${quoteResponse.reason.message}`,
       );
       return fetchFromRateCallback(
         anchor,
         fromCurrency,
         toCurrency,
-        destinationCountry
+        destinationCountry,
       );
     }
 
@@ -136,17 +146,20 @@ export async function fetchAnchorRate(
     // Parse fee_percent from anchor response (may be nested differently per anchor).
     let feePercent = 0;
     if (feeData.fee_percent !== undefined) feePercent = feeData.fee_percent;
-    else if (feeData.fee?.fee_percent !== undefined) feePercent = feeData.fee.fee_percent;
+    else if (feeData.fee?.fee_percent !== undefined)
+      feePercent = feeData.fee.fee_percent;
     else if (feeData.fees) feePercent = feeData.fees.percent ?? 0;
 
     // Parse FX rate (may be "rate" or "price" depending on anchor).
-    const fxRate = Number(quoteData.rate ?? quoteData.price ?? quoteData.quote?.rate ?? 0);
+    const fxRate = Number(
+      quoteData.rate ?? quoteData.price ?? quoteData.quote?.rate ?? 0,
+    );
 
     const minAmount = Number(
-      quoteData.min_amount ?? quoteData.min ?? feeData.min_amount ?? 0
+      quoteData.min_amount ?? quoteData.min ?? feeData.min_amount ?? 0,
     );
     const maxAmount = Number(
-      quoteData.max_amount ?? quoteData.max ?? feeData.max_amount ?? 0
+      quoteData.max_amount ?? quoteData.max ?? feeData.max_amount ?? 0,
     );
 
     const fetched: FetchedRate = {
@@ -166,7 +179,7 @@ export async function fetchAnchorRate(
         anchor,
         fromCurrency,
         toCurrency,
-        destinationCountry
+        destinationCountry,
       );
     }
 
@@ -174,13 +187,13 @@ export async function fetchAnchorRate(
   } catch (error) {
     console.error(
       `[${anchor.id}] Unexpected error fetching rates:`,
-      (error as Error).message
+      (error as Error).message,
     );
     return fetchFromRateCallback(
       anchor,
       fromCurrency,
       toCurrency,
-      destinationCountry
+      destinationCountry,
     );
   }
 }

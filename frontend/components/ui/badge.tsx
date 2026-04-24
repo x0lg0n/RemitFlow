@@ -14,6 +14,7 @@ const badgeVariants = cva(
         error: "bg-rose-500/10 border-rose-500/30 text-rose-300",
         info: "bg-sky-500/10 border-sky-500/30 text-sky-300",
         primary: "bg-blue-500/10 border-blue-500/30 text-blue-300",
+        secondary: "bg-zinc-500/10 border-zinc-500/30 text-zinc-300",
       },
     },
     defaultVariants: {

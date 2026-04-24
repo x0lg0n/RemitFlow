@@ -12,7 +12,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Alert } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -73,8 +72,8 @@ export default function LoginPage() {
                 </span>
               </h1>
               <p className="text-[var(--foreground-muted)] leading-relaxed">
-                Sign in securely using Stellar's SEP-10 protocol. Your private
-                keys never leave your wallet.
+                Sign in securely using Stellar&apos;s SEP-10 protocol. Your
+                private keys never leave your wallet.
               </p>
             </div>
 
@@ -217,7 +216,7 @@ export default function LoginPage() {
 
                 {/* Help Text */}
                 <div className="text-center text-xs text-[var(--foreground-subtle)] pt-2">
-                  Don't have Freighter?{" "}
+                  Don&apos;t have Freighter?{" "}
                   <a
                     href="https://www.freighter.app/"
                     target="_blank"

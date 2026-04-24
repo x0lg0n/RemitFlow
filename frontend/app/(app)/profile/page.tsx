@@ -11,6 +11,7 @@ import {
   Calendar,
   Activity,
   Settings,
+  Globe,
 } from "lucide-react";
 import { RequireSession } from "@/components/shared/RequireSession";
 import { Badge } from "@/components/ui/badge";

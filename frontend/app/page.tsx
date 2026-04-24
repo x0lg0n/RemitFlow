@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { RateComparisonTable } from "@/components/rates/RateComparisonTable";
-import { Alert } from "@/components/ui/alert";
+import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,10 +12,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRates } from "@/hooks/useRates";
 import { useSession } from "@/hooks/useSession";
 import { amountToMinorUnits, formatCurrency } from "@/lib/currency";
-import { calculateSavingsVsAverage, compareRates } from "@/lib/rates";
+import { compareRates } from "@/lib/rates";
 
 export default function LandingPage() {
-  const { rates, isLoading, error } = useRates();
   const { session } = useSession();
 
   // Show dashboard for authenticated users
@@ -31,7 +28,7 @@ export default function LandingPage() {
 
 // Authenticated Home - Dashboard View
 function AuthenticatedHome() {
-  const { rates, isLoading } = useRates();
+  const { rates } = useRates();
   const { session } = useSession();
 
   const corridors = useMemo(() => {
@@ -305,7 +302,7 @@ function PublicLandingPage() {
 
 // Shared rate comparison content
 function PublicLandingPageContent() {
-  const { rates, isLoading, error } = useRates();
+  const { rates, isLoading } = useRates();
 
   const [amountInput, setAmountInput] = useState("500");
   const [selectedCorridor, setSelectedCorridor] = useState<string>("");
@@ -362,20 +359,8 @@ function PublicLandingPageContent() {
     () => compareRates(filteredRates, amountMinor),
     [filteredRates, amountMinor],
   );
-  const savingsPct = useMemo(
-    () =>
-      calculateSavingsVsAverage(
-        comparedRates.map((rate) => rate.totalCostMinor),
-      ),
-    [comparedRates],
-  );
 
   const cheapest = comparedRates[0];
-  const averageTotal =
-    comparedRates.length ?
-      comparedRates.reduce((sum, rate) => sum + rate.totalCostMinor, 0) /
-      comparedRates.length
-    : 0;
 
   return (
     <div className="space-y-6">

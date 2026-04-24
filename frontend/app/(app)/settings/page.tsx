@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { RequireSession } from "@/components/shared/RequireSession";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -22,10 +21,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { useSession } from "@/hooks/useSession";
 
 export default function SettingsPage() {
-  const { session } = useSession();
   const [notifications, setNotifications] = useState(true);
   const [twoFactor, setTwoFactor] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light" | "system">("dark");
@@ -200,7 +197,9 @@ export default function SettingsPage() {
                   ].map((option) => (
                     <button
                       key={option.value}
-                      onClick={() => setTheme(option.value as any)}
+                      onClick={() =>
+                        setTheme(option.value as "dark" | "light" | "system")
+                      }
                       className={`flex items-center gap-3 p-4 rounded-xl border transition-all ${
                         theme === option.value ?
                           "border-blue-500 bg-blue-500/10"
