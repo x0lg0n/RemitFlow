@@ -11,7 +11,7 @@ async function runMigrations(): Promise<void> {
   console.log("Starting database migrations...");
 
   const migrationsDir = path.join(__dirname, "../database/migrations");
-  
+
   if (!fs.existsSync(migrationsDir)) {
     console.error(`Migrations directory not found: ${migrationsDir}`);
     process.exit(1);
