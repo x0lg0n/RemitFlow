@@ -276,9 +276,6 @@ jobs:
             smart-contracts/target
           key: ${{ runner.os }}-cargo-${{ hashFiles('smart-contracts/**/Cargo.lock') }}
 
-      - name: Install Soroban CLI
-        run: cargo install --locked stellar-cli@26.0.0
-
       - name: Run clippy
         run: |
           cd smart-contracts/contracts/remitflow
