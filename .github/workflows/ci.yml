@@ -263,7 +263,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: ${{ env.RUST_VERSION }}
-          target: wasm32-unknown-unknown
+          target: wasm32v1-none
           override: true
           components: rustfmt, clippy
 
@@ -289,7 +289,7 @@ jobs:
       - name: Build contract
         run: |
           cd smart-contracts/contracts/remitflow
-          cargo build --target wasm32-unknown-unknown --release
+          cargo build --target wasm32v1-none --release
 
   # ─── Docker Build Test ─────────────────────────────────────────────────
   docker-build:
