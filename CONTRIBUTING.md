@@ -7,12 +7,14 @@ Thank you for your interest in contributing to RemitFlow! This document provides
 ## 1. GETTING STARTED
 
 ### 1.1 Prerequisites
+
 - Node.js 20.x or higher
 - Rust 1.83+ (for Soroban contracts)
 - Stellar CLI installed
 - Freighter wallet for testing
 
 ### 1.2 Development Setup
+
 ```bash
 # Clone the repository
 git clone https://github.com/your-org/remiflow.git
@@ -33,6 +35,7 @@ npm run dev
 ## 2. DEVELOPMENT WORKFLOW
 
 ### 2.1 Branch Naming
+
 ```
 feature/feature-name
 bugfix/bug-description
@@ -41,6 +44,7 @@ docs/documentation-update
 ```
 
 ### 2.2 Commit Messages
+
 ```
 feat: add new anchor integration
 fix: resolve rate calculation bug
@@ -50,6 +54,7 @@ chore: update dependencies
 ```
 
 ### 2.3 Pull Request Process
+
 1. Fork the repository
 2. Create your feature branch
 3. Make your changes
@@ -63,18 +68,21 @@ chore: update dependencies
 ## 3. CODING STANDARDS
 
 ### 3.1 Smart Contract (Rust)
+
 - Follow Soroban best practices
 - All functions must have documentation
 - Maximum function complexity: 20
 - Test coverage: 90%+
 
 ### 3.2 Backend (Node.js)
+
 - ESLint + Prettier configured
 - Async/await for all async operations
 - Error handling with try/catch
 - Test coverage: 80%+
 
 ### 3.3 Frontend (React)
+
 - Functional components with hooks
 - TypeScript for all new code
 - Responsive design required
@@ -85,6 +93,7 @@ chore: update dependencies
 ## 4. TESTING
 
 ### 4.1 Running Tests
+
 ```bash
 # All tests
 npm test
@@ -100,6 +109,7 @@ npm run test:frontend
 ```
 
 ### 4.2 Test Requirements
+
 - All new features require tests
 - Bug fixes require regression tests
 - Coverage must not decrease
@@ -109,11 +119,13 @@ npm run test:frontend
 ## 5. SECURITY
 
 ### 5.1 Reporting Vulnerabilities
+
 - Email: security@remiflow.io
 - Do not disclose publicly before fix
 - Include reproduction steps
 
 ### 5.2 Security Guidelines
+
 - Never commit secrets
 - Use environment variables
 - Follow OWASP guidelines
