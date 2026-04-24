@@ -9,7 +9,7 @@ on:
 env:
   NODE_VERSION: '24'
   PNPM_VERSION: '10'
-  RUST_VERSION: '1.83'
+  RUST_VERSION: '1.85.0'
 
 jobs:
   # ─── Lint & Type Check ─────────────────────────────────────────────────
