@@ -14,7 +14,6 @@
 /// * `payment`  — Payment initiation and transaction tracking
 /// * `events`   — Event emission helpers
 /// * `test`     — Co-located test suite
-
 mod admin;
 mod anchor;
 mod events;

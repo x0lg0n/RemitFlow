@@ -55,10 +55,7 @@ pub fn update_anchor_rate(env: &Env, rate: &AnchorRate) {
 pub fn get_anchor_rate(env: &Env, anchor_id: &String) -> Option<AnchorRate> {
     let key = rate_key(env, anchor_id);
 
-    let rate: AnchorRate = match env.storage().persistent().get(&key) {
-        Some(r) => r,
-        None => return None,
-    };
+    let rate: AnchorRate = env.storage().persistent().get(&key)?;
 
     // Reject stale rates.
     let current_ledger = env.ledger().sequence();
