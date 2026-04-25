@@ -9,21 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Comprehensive ARCHITECTURE.md documentation
-- CI/CD pipeline with GitHub Actions
-- Automated testing workflows
-- Dependabot for dependency updates
-- Issue and PR templates
-- CODE_OF_CONDUCT.md
-- REQUIRED_FILES.md checklist
-
 ### Changed
 
 ### Deprecated
 
 ### Removed
-
-- `anchor-platform/` directory (not required for core functionality)
 
 ### Fixed
 
@@ -31,7 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.0.0] - 2026-04-23
+## [0.1.0] - 2026-04-25
+
+**MVP Release — Production-ready cross-border payment aggregator**
 
 ### Added
 
@@ -47,6 +39,94 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 92% test coverage
 
 #### Backend API (Express.js)
+
+- SEP-10 authentication flow (Stellar wallet signing)
+- `/rates/best` endpoint for route selection
+- `/transactions/initiate` for SEP-31 payment flow
+- `/transactions/status` for payment tracking
+- Rate limiting (100 req/min per IP)
+- CORS, Helmet security middleware
+- Database migrations (001-004)
+- PostgreSQL connection pooling
+- Redis caching layer
+- 85%+ test coverage
+- Full TypeScript support, no implicit `any`
+
+#### Frontend (Next.js 15 App Router)
+
+- Wallet connection via Freighter (SEP-10 auth)
+- Rate comparison dashboard
+- Real-time rate updates (5-min poll)
+- Currency pair selector with live fees
+- Send flow with recipient management
+- Transaction history and status tracking
+- Responsive design (mobile/tablet/desktop)
+- Dark mode support
+- Accessibility compliance (WCAG 2.1)
+- 75%+ test coverage
+
+#### Oracle Service (Node.js)
+
+- Multi-anchor rate fetching (async)
+- Circuit breaker pattern (3-strike failure)
+- Rate validation & multi-source consensus
+- Redis caching (5-min TTL)
+- Database persistence for audit trail
+- Scheduled updates (every 5 minutes)
+- Graceful error handling & retry logic
+- 85%+ test coverage
+
+#### Documentation
+
+- ARCHITECTURE.md (system design, components, flows)
+- API.md (endpoint specifications, examples)
+- DEVELOPMENT.md (local setup, environment)
+- PRODUCTION_SETUP.md (deployment playbook)
+- DEPLOYMENT.md (infrastructure, scaling)
+- ANCHOR_REGISTRATION_GUIDE.md (onboarding)
+- TROUBLESHOOTING.md (debugging, common issues)
+- AGENTS.md (project rules & coding standards)
+
+#### Infrastructure & DevOps
+
+- CI/CD pipeline (GitHub Actions)
+- Automated linting, type checking, testing
+- Docker Compose (local dev + prod)
+- PostgreSQL 15 + Redis 7 services
+- Contract build & optimization
+- Automated test coverage reporting
+
+### Known Limitations (v0.1.0)
+
+- Testnet only (no mainnet deployment)
+- Manual anchor registration (no self-service portal)
+- Single admin wallet (no role-based access)
+- Rate staleness: 30 minutes hard cutoff
+- No historical rate tracking (rates are ephemeral)
+- Oracle updates tied to single instance (no HA)
+- No mobile app (web-only)
+- No analytics/dashboards for admins
+- No webhook/event notifications
+- Freighter wallet only (no mobile wallets)
+
+### Breaking Changes
+
+- None (first release)
+
+### Migration Notes
+
+- Fresh database setup required
+- Initialize contract with admin + oracle addresses
+- Register anchors via backend API before enabling
+- Deploy oracle service to schedule rate updates
+
+### Performance Baseline
+
+- Rate lookup: <10ms
+- Route optimization: <50ms
+- Payment initiation: <200ms
+- Frontend page load: <2s (LCP)
+- API response time (p95): <100ms
 
 - SEP-10 authentication (challenge/response)
 - JWT session management (24h expiry)

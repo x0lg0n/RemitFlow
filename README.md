@@ -2,6 +2,8 @@
 
 **Save 3-5% on Cross-Border Payments with Stellar**
 
+[![Release: v0.1.0](https://img.shields.io/badge/Release-v0.1.0-brightgreen)](./RELEASE.md)
+[![Status: MVP](https://img.shields.io/badge/Status-MVP%20%E2%9C%93-brightgreen)](./CHANGELOG.md)
 [![Stellar](https://img.shields.io/badge/Built%20on-Stellar-blue)](https://stellar.org)
 [![Soroban](https://img.shields.io/badge/Smart%20Contracts-Soroban-purple)](https://soroban.stellar.org)
 [![Next.js](https://img.shields.io/badge/Frontend-Next.js%2016-black)](https://nextjs.org)
@@ -14,7 +16,7 @@
 
 | Resource           | URL                           | Status    |
 | ------------------ | ----------------------------- | --------- |
-| 🌐 **Live App**    | https://remitflow.io          | 🟢 Active |
+| 🌐 **Live App**    | https://rmtflow.vercel.app/          | 🟢 Active |
 | 🔗 **Testnet App** | https://testnet.remitflow.io  | 🟢 Active |
 | 📡 **API**         | https://api.remitflow.io      | 🟢 Active |
 | 📖 **API Docs**    | https://api.remitflow.io/docs | 🟢 Active |
