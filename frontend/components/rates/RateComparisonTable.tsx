@@ -16,7 +16,7 @@ export function RateComparisonTable({ rates, fromCurrency, toCurrency }: RateCom
     <div className="overflow-x-auto rounded-lg border border-[var(--border)]">
       <Table>
         <thead>
-          <TableRow className="bg-zinc-900/60 hover:bg-zinc-900/60">
+          <TableRow className="bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]">
             <TableHead>Anchor</TableHead>
             <TableHead>Fee</TableHead>
             <TableHead>FX Rate</TableHead>

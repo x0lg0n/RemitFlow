@@ -12,7 +12,7 @@ export function WalletStatus() {
 
   return (
     <div className="flex items-center gap-2">
-      <div className="flex items-center gap-2 rounded-full border border-[var(--border)] bg-zinc-900 px-3 py-1.5">
+      <div className="flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-elevated)] px-3 py-1.5">
         <Wallet className="h-3.5 w-3.5 text-emerald-400" />
         <span className="font-mono text-xs">{formatAddress(session.walletAddress)}</span>
       </div>
