@@ -19,7 +19,10 @@ import type {
   MetricsTrendPoint,
   RetentionCohort,
 } from "@/types/metrics";
-import type { CreateTransactionRequest, Transaction } from "@/types/transaction";
+import type {
+  CreateTransactionRequest,
+  Transaction,
+} from "@/types/transaction";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -29,7 +32,11 @@ interface ApiResponse<T> {
   error?: { code: string; message: string };
 }
 
-async function api<T>(path: string, options: RequestInit = {}, authToken?: string): Promise<T> {
+async function api<T>(
+  path: string,
+  options: RequestInit = {},
+  authToken?: string,
+): Promise<T> {
   const headers = new Headers(options.headers ?? {});
   if (!headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
@@ -49,14 +56,16 @@ async function api<T>(path: string, options: RequestInit = {}, authToken?: strin
   const normalizedBody = rawBody.trim();
 
   if (!contentType.includes("application/json")) {
-    const looksLikeHtml = normalizedBody.startsWith("<!DOCTYPE") || normalizedBody.startsWith("<html");
+    const looksLikeHtml =
+      normalizedBody.startsWith("<!DOCTYPE") ||
+      normalizedBody.startsWith("<html");
     const deploymentHint =
-      looksLikeHtml
-        ? ` The API responded with HTML. Check NEXT_PUBLIC_API_URL (current: ${API_URL}) and ensure backend routes exist for ${path}.`
-        : "";
+      looksLikeHtml ?
+        ` The API responded with HTML. Check NEXT_PUBLIC_API_URL (current: ${API_URL}) and ensure backend routes exist for ${path}.`
+      : "";
     throw new Error(
       `Invalid response format from ${path}: expected JSON but got ${contentType || "unknown content type"}. ` +
-        `Status: ${response.status} ${response.statusText}.${deploymentHint}`
+        `Status: ${response.status} ${response.statusText}.${deploymentHint}`,
     );
   }
 
@@ -67,12 +76,15 @@ async function api<T>(path: string, options: RequestInit = {}, authToken?: strin
     throw new Error(
       `Failed to parse JSON response from ${path}. ` +
         `Status: ${response.status}. ` +
-        `Body starts with: ${normalizedBody.slice(0, 40)}`
+        `Body starts with: ${normalizedBody.slice(0, 40)}`,
     );
   }
 
   if (!response.ok || !payload.success || !payload.data) {
-    throw new Error(payload.error?.message ?? `Request to ${path} failed with status ${response.status}`);
+    throw new Error(
+      payload.error?.message ??
+        `Request to ${path} failed with status ${response.status}`,
+    );
   }
 
   return payload.data;
@@ -83,11 +95,18 @@ export async function getRates(authToken?: string): Promise<AnchorRate[]> {
   return data.rates;
 }
 
-export function getBestRoute(request: RateRequest, authToken?: string): Promise<BestRouteResponse> {
-  return api<BestRouteResponse>("/rates/best", {
-    method: "POST",
-    body: JSON.stringify(request),
-  }, authToken);
+export function getBestRoute(
+  request: RateRequest,
+  authToken?: string,
+): Promise<BestRouteResponse> {
+  return api<BestRouteResponse>(
+    "/rates/best",
+    {
+      method: "POST",
+      body: JSON.stringify(request),
+    },
+    authToken,
+  );
 }
 
 export function createChallenge(address: string): Promise<ChallengeData> {
@@ -97,8 +116,19 @@ export function createChallenge(address: string): Promise<ChallengeData> {
   });
 }
 
-export function verifyChallenge(address: string, signedChallengeTx: string): Promise<{ token: string; role: SessionData["role"]; anchorId: string | null }> {
-  return api<{ token: string; role: SessionData["role"]; anchorId: string | null }>("/auth/verify", {
+export function verifyChallenge(
+  address: string,
+  signedChallengeTx: string,
+): Promise<{
+  token: string;
+  role: SessionData["role"];
+  anchorId: string | null;
+}> {
+  return api<{
+    token: string;
+    role: SessionData["role"];
+    anchorId: string | null;
+  }>("/auth/verify", {
     method: "POST",
     body: JSON.stringify({ address, signedChallengeTx }),
   });
@@ -114,21 +144,45 @@ export function logoutSession(): Promise<{ loggedOut: true }> {
   });
 }
 
-export async function createTransaction(payload: CreateTransactionRequest, authToken?: string): Promise<Transaction> {
-  const data = await api<{ transaction: Transaction }>("/transactions", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  }, authToken);
+export async function createTransaction(
+  payload: CreateTransactionRequest,
+  authToken?: string,
+): Promise<Transaction> {
+  const data = await api<{ transaction: Transaction }>(
+    "/transactions",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+    authToken,
+  );
 
   return data.transaction;
 }
 
-export async function getTransactions(page = 1, limit = 20, authToken?: string): Promise<{ transactions: Transaction[]; pagination: { page: number; limit: number; total: number } }> {
-  return api<{ transactions: Transaction[]; pagination: { page: number; limit: number; total: number } }>(`/transactions?page=${page}&limit=${limit}`, {}, authToken);
+export async function getTransactions(
+  page = 1,
+  limit = 20,
+  authToken?: string,
+): Promise<{
+  transactions: Transaction[];
+  pagination: { page: number; limit: number; total: number };
+}> {
+  return api<{
+    transactions: Transaction[];
+    pagination: { page: number; limit: number; total: number };
+  }>(`/transactions?page=${page}&limit=${limit}`, {}, authToken);
 }
 
-export async function getTransactionById(id: string, authToken?: string): Promise<Transaction> {
-  const data = await api<{ transaction: Transaction }>(`/transactions/${id}`, {}, authToken);
+export async function getTransactionById(
+  id: string,
+  authToken?: string,
+): Promise<Transaction> {
+  const data = await api<{ transaction: Transaction }>(
+    `/transactions/${id}`,
+    {},
+    authToken,
+  );
   return data.transaction;
 }
 
@@ -137,21 +191,38 @@ export async function getAnchors(): Promise<AnchorSummary[]> {
   return data.anchors;
 }
 
-export function getAnchorDashboard(authToken?: string): Promise<AnchorDashboardData> {
+export function getAnchorDashboard(
+  authToken?: string,
+): Promise<AnchorDashboardData> {
   return api<AnchorDashboardData>("/anchors/me/dashboard", {}, authToken);
 }
 
-export async function getAnchorCatalog(authToken?: string): Promise<AnchorCatalogItem[]> {
-  const data = await api<{ catalog: AnchorCatalogItem[] }>("/anchors/catalog", {}, authToken);
+export async function getAnchorCatalog(
+  authToken?: string,
+): Promise<AnchorCatalogItem[]> {
+  const data = await api<{ catalog: AnchorCatalogItem[] }>(
+    "/anchors/catalog",
+    {},
+    authToken,
+  );
   return data.catalog;
 }
 
-export async function getMyAnchorPreferences(authToken?: string): Promise<UserAnchorPreference[]> {
-  const data = await api<{ preferences: UserAnchorPreference[] }>("/anchors/preferences/me", {}, authToken);
+export async function getMyAnchorPreferences(
+  authToken?: string,
+): Promise<UserAnchorPreference[]> {
+  const data = await api<{ preferences: UserAnchorPreference[] }>(
+    "/anchors/preferences/me",
+    {},
+    authToken,
+  );
   return data.preferences;
 }
 
-export async function activateAnchorPreference(catalogId: string, authToken?: string): Promise<UserAnchorPreference> {
+export async function activateAnchorPreference(
+  catalogId: string,
+  authToken?: string,
+): Promise<UserAnchorPreference> {
   const data = await api<{ preference: UserAnchorPreference }>(
     `/anchors/preferences/${catalogId}/activate`,
     { method: "POST" },
@@ -160,8 +231,15 @@ export async function activateAnchorPreference(catalogId: string, authToken?: st
   return data.preference;
 }
 
-export async function deactivateAnchorPreference(catalogId: string, authToken?: string): Promise<{ deactivated: true }> {
-  return api<{ deactivated: true }>(`/anchors/preferences/${catalogId}`, { method: "DELETE" }, authToken);
+export async function deactivateAnchorPreference(
+  catalogId: string,
+  authToken?: string,
+): Promise<{ deactivated: true }> {
+  return api<{ deactivated: true }>(
+    `/anchors/preferences/${catalogId}`,
+    { method: "DELETE" },
+    authToken,
+  );
 }
 
 export async function submitAnchorSubmission(
@@ -268,7 +346,9 @@ export async function createRecurringSend(
   return data.plan;
 }
 
-export async function getRecurringSends(authToken?: string): Promise<{ plans: RecurringSendPlan[]; pendingRuns: RecurringSendRun[] }> {
+export async function getRecurringSends(
+  authToken?: string,
+): Promise<{ plans: RecurringSendPlan[]; pendingRuns: RecurringSendRun[] }> {
   return api<{ plans: RecurringSendPlan[]; pendingRuns: RecurringSendRun[] }>(
     "/recurring-sends",
     {},
@@ -292,7 +372,10 @@ export async function updateRecurringSend(
   return data.plan;
 }
 
-export async function pauseRecurringSend(id: string, authToken?: string): Promise<RecurringSendPlan> {
+export async function pauseRecurringSend(
+  id: string,
+  authToken?: string,
+): Promise<RecurringSendPlan> {
   const data = await api<{ plan: RecurringSendPlan }>(
     `/recurring-sends/${id}/pause`,
     { method: "POST" },
@@ -301,7 +384,10 @@ export async function pauseRecurringSend(id: string, authToken?: string): Promis
   return data.plan;
 }
 
-export async function resumeRecurringSend(id: string, authToken?: string): Promise<RecurringSendPlan> {
+export async function resumeRecurringSend(
+  id: string,
+  authToken?: string,
+): Promise<RecurringSendPlan> {
   const data = await api<{ plan: RecurringSendPlan }>(
     `/recurring-sends/${id}/resume`,
     { method: "POST" },
@@ -310,7 +396,10 @@ export async function resumeRecurringSend(id: string, authToken?: string): Promi
   return data.plan;
 }
 
-export async function cancelRecurringSend(id: string, authToken?: string): Promise<RecurringSendPlan> {
+export async function cancelRecurringSend(
+  id: string,
+  authToken?: string,
+): Promise<RecurringSendPlan> {
   const data = await api<{ plan: RecurringSendPlan }>(
     `/recurring-sends/${id}/cancel`,
     { method: "POST" },
@@ -319,7 +408,10 @@ export async function cancelRecurringSend(id: string, authToken?: string): Promi
   return data.plan;
 }
 
-export async function confirmRecurringRun(runId: string, authToken?: string): Promise<{ run: RecurringSendRun; transactionId: string }> {
+export async function confirmRecurringRun(
+  runId: string,
+  authToken?: string,
+): Promise<{ run: RecurringSendRun; transactionId: string }> {
   return api<{ run: RecurringSendRun; transactionId: string }>(
     `/recurring-sends/runs/${runId}/confirm`,
     {
@@ -330,8 +422,14 @@ export async function confirmRecurringRun(runId: string, authToken?: string): Pr
   );
 }
 
-export async function getMetricsOverview(authToken?: string): Promise<MetricsOverview> {
-  const data = await api<{ overview: MetricsOverview }>("/metrics/overview", {}, authToken);
+export async function getMetricsOverview(
+  authToken?: string,
+): Promise<MetricsOverview> {
+  const data = await api<{ overview: MetricsOverview }>(
+    "/metrics/overview",
+    {},
+    authToken,
+  );
   return data.overview;
 }
 
@@ -359,8 +457,14 @@ export async function getMetricsRetention(
   return data.cohorts;
 }
 
-export async function getIndexingSummary(authToken?: string): Promise<IndexingSummary> {
-  const data = await api<{ summary: IndexingSummary }>("/indexing/summary", {}, authToken);
+export async function getIndexingSummary(
+  authToken?: string,
+): Promise<IndexingSummary> {
+  const data = await api<{ summary: IndexingSummary }>(
+    "/indexing/summary",
+    {},
+    authToken,
+  );
   return data.summary;
 }
 
@@ -368,19 +472,29 @@ export async function getIndexingRecent(
   limit = 25,
   authToken?: string,
 ): Promise<IndexingRow[]> {
-  const data = await api<{ rows: IndexingRow[] }>(`/indexing/recent?limit=${limit}`, {}, authToken);
+  const data = await api<{ rows: IndexingRow[] }>(
+    `/indexing/recent?limit=${limit}`,
+    {},
+    authToken,
+  );
   return data.rows;
 }
 
 export async function runIndexingNow(
   authToken?: string,
-): Promise<{ checked: number; matched: number; missing: number; errored: number }> {
+): Promise<{
+  checked: number;
+  matched: number;
+  missing: number;
+  errored: number;
+}> {
   const data = await api<{
-    result: { checked: number; matched: number; missing: number; errored: number };
-  }>(
-    "/indexing/reconcile-now",
-    { method: "POST" },
-    authToken,
-  );
+    result: {
+      checked: number;
+      matched: number;
+      missing: number;
+      errored: number;
+    };
+  }>("/indexing/reconcile-now", { method: "POST" }, authToken);
   return data.result;
 }

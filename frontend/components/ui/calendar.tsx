@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { DayPicker, useNavigation } from "react-day-picker"
-import { format, setMonth, setYear } from "date-fns"
+import * as React from "react";
+import { DayPicker, useNavigation } from "react-day-picker";
+import { format, setMonth, setYear } from "date-fns";
 
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>
+export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
 function Calendar({
   className,
@@ -36,7 +36,7 @@ function Calendar({
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "secondary" }),
-          "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 hover:bg-black hover:text-white rounded-lg transition-all border-(--border)"
+          "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 hover:bg-black hover:text-white rounded-lg transition-all border-(--border)",
         ),
         nav_button_previous: "absolute left-2",
         nav_button_next: "absolute right-2",
@@ -48,7 +48,7 @@ function Calendar({
         cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-xl [&:has([aria-selected].day-outside)]:bg-transparent [&:has([aria-selected])]:bg-gray-100/50 first:[&:has([aria-selected])]:rounded-l-xl last:[&:has([aria-selected])]:rounded-r-xl focus-within:relative focus-within:z-20",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-bold hover:bg-black hover:text-white rounded-lg transition-all text-xs"
+          "h-9 w-9 p-0 font-bold hover:bg-black hover:text-white rounded-lg transition-all text-xs",
         ),
         day_range_end: "day-range-end",
         day_selected:
@@ -57,8 +57,7 @@ function Calendar({
         day_outside:
           "day-outside text-gray-300 opacity-50 aria-selected:bg-gray-50 aria-selected:text-gray-300",
         day_disabled: "text-gray-200 opacity-50",
-        day_range_middle:
-          "aria-selected:bg-gray-100 aria-selected:text-black",
+        day_range_middle: "aria-selected:bg-gray-100 aria-selected:text-black",
         day_hidden: "invisible",
         ...classNames,
       }}
@@ -77,15 +76,19 @@ function Calendar({
           return (
             <div className="flex justify-center pt-2 relative items-center gap-2">
               <Select
-                onValueChange={(value) => goToMonth(setMonth(calendarMonth.date, parseInt(value)))}
-                value={calendarMonth.date.getMonth().toString()}
-              >
+                onValueChange={(value) =>
+                  goToMonth(setMonth(calendarMonth.date, parseInt(value)))
+                }
+                value={calendarMonth.date.getMonth().toString()}>
                 <SelectTrigger className="h-8 w-30 font-black uppercase text-[10px] tracking-widest border-(--border) rounded-lg bg-gray-50/50">
                   <SelectValue placeholder="Month" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-(--border) rounded-xl">
                   {months.map((month) => (
-                    <SelectItem key={month.value} value={month.value} className="text-[10px] font-bold uppercase tracking-widest p-2">
+                    <SelectItem
+                      key={month.value}
+                      value={month.value}
+                      className="text-[10px] font-bold uppercase tracking-widest p-2">
                       {month.label}
                     </SelectItem>
                   ))}
@@ -93,15 +96,19 @@ function Calendar({
               </Select>
 
               <Select
-                onValueChange={(value) => goToMonth(setYear(calendarMonth.date, parseInt(value)))}
-                value={calendarMonth.date.getFullYear().toString()}
-              >
+                onValueChange={(value) =>
+                  goToMonth(setYear(calendarMonth.date, parseInt(value)))
+                }
+                value={calendarMonth.date.getFullYear().toString()}>
                 <SelectTrigger className="h-8 w-20 font-black uppercase text-[10px] tracking-widest border-(--border) rounded-lg bg-gray-50/50">
                   <SelectValue placeholder="Year" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-(--border) rounded-xl">
                   {years.map((year) => (
-                    <SelectItem key={year.value} value={year.value} className="text-[10px] font-bold uppercase tracking-widest p-2">
+                    <SelectItem
+                      key={year.value}
+                      value={year.value}
+                      className="text-[10px] font-bold uppercase tracking-widest p-2">
                       {year.label}
                     </SelectItem>
                   ))}
@@ -109,12 +116,12 @@ function Calendar({
               </Select>
             </div>
           );
-        }
+        },
       }}
       {...props}
     />
-  )
+  );
 }
-Calendar.displayName = "Calendar"
+Calendar.displayName = "Calendar";
 
-export { Calendar }
+export { Calendar };

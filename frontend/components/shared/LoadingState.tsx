@@ -49,21 +49,17 @@ function ShimmerLoader({
   size: "sm" | "md" | "lg";
 }) {
   const baseClasses =
-    size === "sm"
-      ? "mb-2"
-      : size === "lg"
-        ? "mb-4"
-        : "mb-3";
+    size === "sm" ? "mb-2"
+    : size === "lg" ? "mb-4"
+    : "mb-3";
 
   return (
     <div className="space-y-3">
       {Array.from({ length: count }).map((_, i) => {
         const widthClass =
-          i === count - 1
-            ? "w-2/3"
-            : i % 2 === 0
-              ? "w-full"
-              : "w-5/6";
+          i === count - 1 ? "w-2/3"
+          : i % 2 === 0 ? "w-full"
+          : "w-5/6";
 
         return (
           <div
@@ -157,11 +153,9 @@ export const Loaders = {
       <div className="space-y-3">
         {Array.from({ length: count }).map((_, i) => {
           const widthClass =
-            i === count - 1
-              ? "w-2/3"
-              : i % 2 === 0
-                ? "w-full"
-                : "w-5/6";
+            i === count - 1 ? "w-2/3"
+            : i % 2 === 0 ? "w-full"
+            : "w-5/6";
 
           return (
             <div
@@ -235,15 +229,12 @@ export const Loaders = {
   /**
    * Transaction list skeleton
    */
-  SkeletonTransactionList: ({
-    count = 5,
-  }: { count?: number } = {}) => (
+  SkeletonTransactionList: ({ count = 5 }: { count?: number } = {}) => (
     <div className="space-y-2 border-t border-[var(--border)]">
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="flex items-center justify-between py-3 px-2 border-b border-[var(--border)] last:border-b-0"
-        >
+          className="flex items-center justify-between py-3 px-2 border-b border-[var(--border)] last:border-b-0">
           <div className="flex-1 space-y-1">
             <div className="h-4 w-32 rounded bg-gradient-to-r from-[var(--background)] via-[var(--surface)] to-[var(--background)] bg-[length:200%_100%] animate-shimmer" />
             <div className="h-3 w-24 rounded bg-gradient-to-r from-[var(--background)] via-[var(--surface)] to-[var(--background)] bg-[length:200%_100%] animate-shimmer" />
