@@ -21,6 +21,47 @@
 
 ---
 
+## 🤝 Community Contribution
+
+We love our community! If you've shared RemitFlow on social media, contributed feedback, or helped spread the word, we want to feature you here!
+
+- **X (Twitter):** [Siddhartha Kunwar Shared RemitFlow on X](https://x.com/x0lg0n/status/2049877612206690661)
+- **LinkedIn:** [Siddhartha Kunwar Shared RemitFlow on LinkedIn](https://www.linkedin.com/posts/siddhartha-kunwar_remitflow-feedback-form-share-7455641600526905345-4d54?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEGXp10B_gK0g2Ylh8j98FdjAa7wpQgQFGw)
+
+---
+
+## 💬 Share Your Feedback
+
+Your feedback is invaluable in helping us improve RemitFlow! If you've tried the platform, please take a moment to share your experience:
+📝 **[Fill out our Feedback Form](https://forms.gle/WQdUCZrs7FzK2Qa2A)** - Takes only 2 minutes!
+
+---
+
+### 🌟 Community Contributions
+
+We're grateful for our amazing community members who help spread the word and contribute to RemitFlow!
+
+#### Ways to Contribute
+
+| Contribution Type | How to Get Featured | Impact |
+|---|---|---|
+| 📱 **Social Shares** | Share on X, LinkedIn, or other platforms | Help reach developers & entrepreneurs globally |
+| 💡 **Feedback & Ideas** | [Fill our feedback form](https://forms.gle/WQdUCZrs7FzK2Qa2A) | Shape product roadmap & UX |
+| 🐛 **Bug Reports** | [Open an issue](https://github.com/x0lg0n/RemitFlow/issues) | Improve stability & reliability |
+| 💻 **Code Contributions** | [Submit a PR](https://github.com/x0lg0n/RemitFlow/pulls) | Add features & fix issues |
+| 📚 **Documentation** | Improve docs & guides | Help onboard new developers |
+| 🔗 **Anchor Integration** | Deploy & test new anchors | Expand payment corridors |
+
+#### Recent Community Activity
+
+- ✅ **Social Shares:** Posts live on X & LinkedIn 🚀
+- ✅ **Early Feedback:** Community testing on Testnet 🧪
+- ✅ **Bug Reports:** Contributing to v0.1 improvements 🐛
+
+> **📢 Want to be featured here?** Contribute to RemitFlow and we'll showcase you! Star the repo, share on social media, or submit code contributions.
+
+---
+
 ## 💬 Share Your Feedback
 
 We value your input! Help us improve RemitFlow by sharing your experience:
@@ -33,6 +74,7 @@ Your feedback helps us:
 - 🐛 Identify and fix issues faster
 - 💡 Prioritize new features
 - 🎯 Better serve the remittance community
+
 
 ### User Feedback Wallet
 
