@@ -60,6 +60,72 @@ BEGIN
     ('demo_brazil', 'USDC', 'BRL', 'BR', 1.80, 5.05, 100, 50000000, NOW(), NOW() + INTERVAL '24 hours'),
     ('demo_brazil', 'USD', 'BRL', 'BR', 2.30, 5.02, 100, 50000000, NOW(), NOW() + INTERVAL '24 hours');
 
+    -- Sync demo anchors into marketplace catalog for user activation flows.
+    IF EXISTS (
+      SELECT 1
+      FROM information_schema.tables
+      WHERE table_schema = 'public' AND table_name = 'anchor_catalog'
+    ) THEN
+      INSERT INTO anchor_catalog (
+        id,
+        anchor_id,
+        display_name,
+        description,
+        country_code,
+        supported_currencies,
+        supported_countries,
+        fee_estimate,
+        rating,
+        availability_status,
+        is_published,
+        notes
+      )
+      VALUES
+      (
+        'demo_colombia',
+        'demo_colombia',
+        'Demo Anchor Colombia',
+        'Demo corridor for USD to COP transfers.',
+        'CO',
+        ARRAY['USDC', 'USD', 'COP'],
+        ARRAY['CO', 'US'],
+        '1.5%',
+        4.6,
+        'available',
+        true,
+        'Auto-seeded demo anchor'
+      ),
+      (
+        'demo_mexico',
+        'demo_mexico',
+        'Demo Anchor Mexico',
+        'Demo corridor for USD to MXN transfers.',
+        'MX',
+        ARRAY['USDC', 'USD', 'MXN'],
+        ARRAY['MX', 'US'],
+        '1.75%',
+        4.5,
+        'available',
+        true,
+        'Auto-seeded demo anchor'
+      ),
+      (
+        'demo_brazil',
+        'demo_brazil',
+        'Demo Anchor Brazil',
+        'Demo corridor for USD to BRL transfers.',
+        'BR',
+        ARRAY['USDC', 'USD', 'BRL'],
+        ARRAY['BR', 'US'],
+        '1.8%',
+        4.4,
+        'available',
+        true,
+        'Auto-seeded demo anchor'
+      )
+      ON CONFLICT (id) DO NOTHING;
+    END IF;
+
     RAISE NOTICE 'Demo anchors and rates seeded successfully!';
   ELSE
     RAISE NOTICE 'Database already has anchors, skipping seed.';
