@@ -1,13 +1,59 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { pool } from "../config/database";
+import {
+  resolveRoleForAddress,
+  type SessionRole,
+} from "../services/role.service";
 
-const COOKIE_NAME = process.env.SESSION_COOKIE_NAME ?? "remitflow_session";
+const COOKIE_NAME = process.env.SESSION_COOKIE_NAME ?? "volara_session";
 
 export interface AuthRequest extends Request {
   walletAddress?: string;
-  role?: "user" | "admin" | "oracle" | "anchor";
+  role?: SessionRole;
   anchorId?: string | null;
+}
+
+interface DecodedToken {
+  sub: string;
+  role?: string;
+  anchorId?: string | null;
+}
+
+function getTokenFromRequest(req: AuthRequest): string | null {
+  const bearerHeader = req.headers.authorization;
+  const bearerToken =
+    bearerHeader && bearerHeader.startsWith("Bearer ")
+      ? bearerHeader.split(" ")[1]
+      : null;
+  const cookieToken = req.cookies?.[COOKIE_NAME] as string | undefined;
+  return bearerToken ?? cookieToken ?? null;
+}
+
+async function applyAuthContext(req: AuthRequest, token: string): Promise<void> {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET not configured");
+
+  const decoded = jwt.verify(token, secret) as DecodedToken;
+  req.walletAddress = decoded.sub;
+
+  const dbRole = await resolveRoleForAddress(decoded.sub);
+
+  // Database role mappings take precedence over token role claims.
+  if (dbRole.role === "admin") {
+    req.role = "admin";
+    req.anchorId = null;
+    return;
+  }
+
+  if (dbRole.role === "anchor") {
+    req.role = "anchor";
+    req.anchorId = dbRole.anchorId;
+    return;
+  }
+
+  // Preserve oracle role claim when no DB-mapped role exists.
+  req.role = decoded.role === "oracle" ? "oracle" : "user";
+  req.anchorId = null;
 }
 
 export async function authMiddleware(
@@ -15,13 +61,7 @@ export async function authMiddleware(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  const bearerHeader = req.headers.authorization;
-  const bearerToken =
-    bearerHeader && bearerHeader.startsWith("Bearer ")
-      ? bearerHeader.split(" ")[1]
-      : null;
-  const cookieToken = req.cookies?.[COOKIE_NAME] as string | undefined;
-  const token = bearerToken ?? cookieToken;
+  const token = getTokenFromRequest(req);
 
   if (!token) {
     res.status(401).json({
@@ -32,32 +72,7 @@ export async function authMiddleware(
   }
 
   try {
-    const secret = process.env.JWT_SECRET;
-    if (!secret) throw new Error("JWT_SECRET not configured");
-
-    const decoded = jwt.verify(token, secret) as {
-      sub: string;
-      role?: string;
-      anchorId?: string | null;
-    };
-
-    req.walletAddress = decoded.sub;
-    req.role = (decoded.role as AuthRequest["role"]) ?? "user";
-    req.anchorId = decoded.anchorId ?? null;
-
-    // Resolve anchor role from DB if token role is user and wallet maps to an anchor.
-    if (req.walletAddress && req.role === "user") {
-      const { rows } = await pool.query<{ id: string }>(
-        "SELECT id FROM anchors WHERE stellar_address = $1 LIMIT 1",
-        [req.walletAddress]
-      );
-
-      if (rows.length > 0) {
-        req.role = "anchor";
-        req.anchorId = rows[0].id;
-      }
-    }
-
+    await applyAuthContext(req, token);
     next();
   } catch {
     res.status(401).json({
@@ -65,6 +80,30 @@ export async function authMiddleware(
       error: { code: "INVALID_TOKEN", message: "Invalid or expired token" },
     });
   }
+}
+
+/**
+ * Optional auth parser for endpoints that remain public but can benefit from
+ * user context (for example user-specific filtering).
+ */
+export async function optionalAuthMiddleware(
+  req: AuthRequest,
+  _res: Response,
+  next: NextFunction
+): Promise<void> {
+  const token = getTokenFromRequest(req);
+  if (!token) {
+    next();
+    return;
+  }
+
+  try {
+    await applyAuthContext(req, token);
+  } catch {
+    // Ignore malformed/expired tokens for optional-auth routes.
+  }
+
+  next();
 }
 
 /** Require the authenticated user to have the admin role. */

@@ -1,16 +1,14 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { authMiddleware } from "./auth.middleware";
-import { pool } from "../config/database";
+import { resolveRoleForAddress } from "../services/role.service";
 
 jest.mock("jsonwebtoken", () => ({
   verify: jest.fn(),
 }));
 
-jest.mock("../config/database", () => ({
-  pool: {
-    query: jest.fn(),
-  },
+jest.mock("../services/role.service", () => ({
+  resolveRoleForAddress: jest.fn(),
 }));
 
 describe("authMiddleware", () => {
@@ -24,16 +22,20 @@ describe("authMiddleware", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     process.env.JWT_SECRET = "test-secret";
+    process.env.SESSION_COOKIE_NAME = "volara_session";
   });
 
   it("accepts cookie token and resolves anchor role", async () => {
     const req = {
       headers: {},
-      cookies: { remitflow_session: "cookie.jwt" },
+      cookies: { volara_session: "cookie.jwt" },
     } as unknown as Request;
 
     (jwt.verify as jest.Mock).mockReturnValue({ sub: "GABC", role: "user" });
-    (pool.query as jest.Mock).mockResolvedValue({ rows: [{ id: "anchor-1" }] });
+    (resolveRoleForAddress as jest.Mock).mockResolvedValue({
+      role: "anchor",
+      anchorId: "anchor-1",
+    });
 
     await authMiddleware(req as never, res, next);
 

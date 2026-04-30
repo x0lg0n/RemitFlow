@@ -1,5 +1,6 @@
 import { pool } from "../../shared/config/database";
 import { redis } from "../../shared/config/redis";
+import { getUserAllowedTechnicalAnchorIds } from "../anchors/marketplace.service";
 import {
   AnchorRate,
   BestRouteResponse,
@@ -11,7 +12,11 @@ import {
 const RATES_CACHE_TTL = 60; // seconds
 
 /** Fetch all active anchor rates from the database (with Redis cache). */
-export async function getAllActiveRates(): Promise<AnchorRate[]> {
+export async function getAllActiveRates(userId?: string): Promise<AnchorRate[]> {
+  if (userId) {
+    return getActiveRatesForUser(userId);
+  }
+
   const cacheKey = "rates:all_active";
   const cached = await redis.get(cacheKey);
   if (cached) return JSON.parse(cached) as AnchorRate[];
@@ -30,11 +35,41 @@ export async function getAllActiveRates(): Promise<AnchorRate[]> {
   return rates;
 }
 
+/** Fetch active rates filtered by the user's active marketplace preferences. */
+async function getActiveRatesForUser(userId: string): Promise<AnchorRate[]> {
+  const allowedAnchorIds = await getUserAllowedTechnicalAnchorIds(userId);
+  if (allowedAnchorIds.length === 0) {
+    return [];
+  }
+
+  const cacheKey = `rates:user:${userId}`;
+  const cached = await redis.get(cacheKey);
+  if (cached) {
+    return JSON.parse(cached) as AnchorRate[];
+  }
+
+  const { rows } = await pool.query<RateRow>(
+    `SELECT r.*, a.name
+     FROM rates r
+     JOIN anchors a ON r.anchor_id = a.id
+     WHERE a.is_active = true
+       AND r.expires_at > NOW()
+       AND r.anchor_id = ANY($1::text[])
+     ORDER BY r.fee_percent ASC, r.fx_rate DESC`,
+    [allowedAnchorIds]
+  );
+
+  const rates = rows.map(rowToAnchorRate);
+  await redis.setex(cacheKey, RATES_CACHE_TTL, JSON.stringify(rates));
+  return rates;
+}
+
 /** Find the cheapest route for the given request. */
 export async function findBestRoute(
   request: RateRequest,
+  userId?: string,
 ): Promise<BestRouteResponse | null> {
-  const rates = await getAllActiveRates();
+  const rates = await getAllActiveRates(userId);
   return computeBestRoute(rates, request);
 }
 
@@ -43,25 +78,16 @@ export function computeBestRoute(
   rates: AnchorRate[],
   request: RateRequest,
 ): BestRouteResponse | null {
-  console.log("[computeBestRoute] Request:", JSON.stringify(request));
-  console.log("[computeBestRoute] Available rates count:", rates.length);
-
   // Filter by corridor, destination country, and amount range.
   const eligible = rates.filter((r) => {
-    const matches =
+    return (
       r.fromCurrency === request.fromCurrency &&
       r.toCurrency === request.toCurrency &&
       r.destinationCountry === request.destinationCountry &&
       request.amount >= r.minAmount &&
-      request.amount <= r.maxAmount;
-
-    console.log(
-      `[computeBestRoute] Rate ${r.anchorId}: ${r.fromCurrency}→${r.toCurrency} (${r.destinationCountry}) min=${r.minAmount} max=${r.maxAmount} - ${matches ? "MATCH" : "NO MATCH"}`,
+      request.amount <= r.maxAmount
     );
-    return matches;
   });
-
-  console.log("[computeBestRoute] Eligible rates:", eligible.length);
 
   if (eligible.length === 0) return null;
 

@@ -4,13 +4,14 @@ import {
   getUserTransactions,
   getTransactionById,
 } from "./transaction.service";
-import { findBestRoute, getAllActiveRates } from "../rates/rate.service";
+import { computeBestRoute, getAllActiveRates } from "../rates/rate.service";
 import { AuthRequest } from "../../shared/middleware/auth.middleware";
 import { queryTransactionsSchema } from "./transaction.validator";
 import {
   executeSep31Transaction,
   Sep31ExecutionError,
 } from "./sep31-execution.service";
+import { isTechnicalAnchorEnabledForUser } from "../anchors/marketplace.service";
 
 /** POST /transactions — create a new remittance transaction. */
 export async function createTx(req: AuthRequest, res: Response): Promise<void> {
@@ -25,12 +26,26 @@ export async function createTx(req: AuthRequest, res: Response): Promise<void> {
     recipientInfo,
   } = req.body;
 
-  const route = await findBestRoute({
+  const routeRequest = {
     amount,
     fromCurrency,
     toCurrency,
     destinationCountry,
-  });
+  };
+  const rates = await getAllActiveRates(userId);
+
+  if (rates.length === 0) {
+    res.status(400).json({
+      success: false,
+      error: {
+        code: "NO_ACTIVE_ANCHORS",
+        message: "No active anchors configured. Activate anchors in marketplace.",
+      },
+    });
+    return;
+  }
+
+  const route = computeBestRoute(rates, routeRequest);
 
   if (!route) {
     res.status(404).json({
@@ -43,19 +58,27 @@ export async function createTx(req: AuthRequest, res: Response): Promise<void> {
     return;
   }
 
+  let selectedRoute = route;
+
   if (anchorId) {
-    const rates = await getAllActiveRates();
-    const anchorEligible = rates.some(
-      (rate) =>
-        rate.anchorId === anchorId &&
-        rate.fromCurrency === fromCurrency &&
-        rate.toCurrency === toCurrency &&
-        rate.destinationCountry === destinationCountry &&
-        amount >= rate.minAmount &&
-        amount <= rate.maxAmount,
+    const isEnabledForUser = await isTechnicalAnchorEnabledForUser(userId, anchorId);
+    if (!isEnabledForUser) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: "ANCHOR_NOT_ACTIVE_FOR_USER",
+          message: "Selected anchor is not active in your marketplace preferences",
+        },
+      });
+      return;
+    }
+
+    const preferredRoute = computeBestRoute(
+      rates.filter((rate) => rate.anchorId === anchorId),
+      routeRequest,
     );
 
-    if (!anchorEligible) {
+    if (!preferredRoute) {
       res.status(400).json({
         success: false,
         error: {
@@ -65,15 +88,17 @@ export async function createTx(req: AuthRequest, res: Response): Promise<void> {
       });
       return;
     }
+
+    selectedRoute = preferredRoute;
   }
 
-  const selectedAnchorId = anchorId || route.anchorId;
+  const selectedAnchorId = selectedRoute.anchorId;
 
   let executionResult;
 
   // Check if this is a demo anchor (URL contains 'example.com' or 'demo')
   const isDemoAnchor =
-    anchorId?.includes("demo") || anchorId?.includes("example");
+    selectedAnchorId.includes("demo") || selectedAnchorId.includes("example");
 
   if (isDemoAnchor) {
     // Mock execution for demo anchors - skip real API call
@@ -127,7 +152,7 @@ export async function createTx(req: AuthRequest, res: Response): Promise<void> {
     userId,
     anchorId: selectedAnchorId,
     amount,
-    fee: route.totalFee,
+    fee: selectedRoute.totalFee,
     fromCurrency,
     toCurrency,
     destinationCountry,

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { logger } from "../logger";
 
 interface ApiError extends Error {
   statusCode?: number;
@@ -20,7 +21,14 @@ export function errorMiddleware(
       ? "Internal server error"
       : err.message;
 
-  console.error(`[Error] ${code}: ${err.message}`, err.stack);
+  logger.error("http_error_response", {
+    code,
+    statusCode,
+    message: err.message,
+    stack: err.stack,
+    method: _req.method,
+    path: _req.originalUrl,
+  });
 
   res.status(statusCode).json({
     success: false,

@@ -7,7 +7,7 @@ import {
   WebAuth,
 } from "@stellar/stellar-sdk";
 import { redis } from "../../shared/config/redis";
-import { pool } from "../../shared/config/database";
+import { resolveRoleForAddress } from "../../shared/services/role.service";
 
 const CHALLENGE_TTL_SECONDS = 300; // 5 minutes
 const JWT_EXPIRY_HOURS = parseInt(process.env.JWT_EXPIRY_HOURS ?? "24", 10);
@@ -129,7 +129,7 @@ export async function verifyChallenge(
 
   await redis.del(`sep10:challenge:${challengeHash}`);
 
-  const { role, anchorId } = await getRoleForAddress(address);
+  const { role, anchorId } = await resolveRoleForAddress(address);
   const secret = process.env.JWT_SECRET;
   if (!secret) throw new Error("JWT_SECRET not configured");
 
@@ -144,7 +144,6 @@ export async function verifyChallenge(
 
 function getServerKeypair(): Keypair {
   const serverSecret = SEP10_SERVER_SECRET;
-  console.log(serverSecret);
   if (!serverSecret) {
     throw new Error("SEP10_SERVER_SECRET not configured");
   }
@@ -177,21 +176,6 @@ async function getSignerKeys(address: string): Promise<string[]> {
     // Fallback to the account's public key in local development.
     return [address];
   }
-}
-
-async function getRoleForAddress(
-  address: string
-): Promise<{ role: "user" | "admin" | "oracle" | "anchor"; anchorId: string | null }> {
-  const { rows } = await pool.query<{ id: string }>(
-    "SELECT id FROM anchors WHERE stellar_address = $1 LIMIT 1",
-    [address]
-  );
-
-  if (rows.length > 0) {
-    return { role: "anchor", anchorId: rows[0].id };
-  }
-
-  return { role: "user", anchorId: null };
 }
 
 export class ApiError extends Error {

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { generateChallenge, verifyChallenge } from "./auth.service";
 import { AuthRequest } from "../../shared/middleware/auth.middleware";
 
-const COOKIE_NAME = process.env.SESSION_COOKIE_NAME ?? "remitflow_session";
+const COOKIE_NAME = process.env.SESSION_COOKIE_NAME ?? "volara_session";
 const JWT_EXPIRY_HOURS = parseInt(process.env.JWT_EXPIRY_HOURS ?? "24", 10);
 const SESSION_MAX_AGE_MS = JWT_EXPIRY_HOURS * 60 * 60 * 1000;
 
