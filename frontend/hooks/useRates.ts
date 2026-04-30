@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { getBestRoute, getRates } from "@/lib/api";
+import { useSession } from "@/hooks/useSession";
 import type { AnchorRate, BestRouteResponse, RateRequest } from "@/types/rate";
 
 interface RatesState {
@@ -12,6 +13,7 @@ interface RatesState {
 }
 
 export function useRates() {
+  const { token } = useSession();
   const [state, setState] = useState<RatesState>({
     rates: [],
     isLoading: false,
@@ -23,7 +25,7 @@ export function useRates() {
     setState((previous) => ({ ...previous, isLoading: true, error: null }));
 
     try {
-      const rates = await getRates();
+      const rates = await getRates(token ?? undefined);
       setState({
         rates,
         isLoading: false,
@@ -37,11 +39,11 @@ export function useRates() {
         error: err instanceof Error ? err.message : "Failed to fetch rates",
       }));
     }
-  }, []);
+  }, [token]);
 
   const findBestRoute = useCallback(async (request: RateRequest): Promise<BestRouteResponse> => {
-    return getBestRoute(request);
-  }, []);
+    return getBestRoute(request, token ?? undefined);
+  }, [token]);
 
   useEffect(() => {
     refetch();
