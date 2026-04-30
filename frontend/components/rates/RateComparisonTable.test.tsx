@@ -11,6 +11,8 @@ describe("RateComparisonTable", () => {
           {
             anchorId: "best",
             anchorName: "BestAnchor",
+            fromCurrency: "USDC",
+            toCurrency: "COP",
             feeMinor: 500,
             totalCostMinor: 50500,
             destinationAmountMinor: 2100000,
@@ -20,6 +22,8 @@ describe("RateComparisonTable", () => {
           {
             anchorId: "other",
             anchorName: "OtherAnchor",
+            fromCurrency: "USDC",
+            toCurrency: "COP",
             feeMinor: 900,
             totalCostMinor: 50900,
             destinationAmountMinor: 2095000,

@@ -23,5 +23,5 @@ export function ToastProvider() {
 
   if (!maybe) return null;
 
-  return <ToastContainer toasts={toasts} onClose={removeNotification} />;
+  return <ToastContainer toasts={toasts} onClose={maybe.removeNotification} />;
 }
