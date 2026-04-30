@@ -1,7 +1,7 @@
 {
-  "name": "remitflow-backend",
+  "name": "volara-backend",
   "version": "0.1.0",
-  "description": "RemitFlow backend API server — rate comparison, transaction management, SEP-10 auth",
+  "description": "Volara backend API server — rate comparison, transaction management, SEP-10 auth",
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
@@ -10,7 +10,8 @@
     "lint": "eslint src/",
     "test": "jest --config jest.config.ts",
     "test:watch": "jest --config jest.config.ts --watch",
-    "migrate": "ts-node scripts/run-migrations.ts"
+    "migrate": "ts-node scripts/run-migrations.ts",
+    "bootstrap:admin": "ts-node scripts/bootstrap-admin-wallet.ts"
   },
   "dependencies": {
     "@stellar/stellar-sdk": "15.0.1",
