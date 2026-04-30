@@ -6,7 +6,9 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
     <div
       className={cn(
         "rounded-2xl border border-[var(--border)] bg-[var(--card)] backdrop-blur-xl shadow-sm",
-        "transition-all duration-200 hover:border-[var(--border-hover)] hover:shadow-md hover:-translate-y-0.5",
+        "motion-safe:transition-all motion-safe:duration-300 motion-safe:ease-out hover:border-[var(--border-hover)] motion-safe:hover:shadow-md motion-safe:hover:-translate-y-0.5 motion-reduce:transition-none",
+        "before:pointer-events-none before:absolute before:inset-0 before:rounded-2xl before:border before:border-[var(--border)]/30 before:content-['']",
+        "relative overflow-hidden",
         className,
       )}
       {...props}
@@ -36,7 +38,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        "text-xl font-semibold tracking-tight text-white",
+        "text-xl font-semibold tracking-tight text-[var(--foreground)]",
         className,
       )}
       {...props}
@@ -70,7 +72,7 @@ export function CardFooter({
   return (
     <div
       className={cn(
-        "px-6 py-4 border-t border-[var(--border)] bg-white/5",
+        "px-6 py-4 border-t border-[var(--border)] bg-[var(--surface-elevated)]/50",
         className,
       )}
       {...props}
