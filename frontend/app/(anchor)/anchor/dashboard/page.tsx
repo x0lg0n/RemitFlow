@@ -6,8 +6,6 @@ import {
   Activity,
   DollarSign,
   ArrowUpRight,
-  ArrowDownLeft,
-  Calendar,
   Filter,
   Download,
 } from "lucide-react";
@@ -24,7 +22,6 @@ import { RequireSession } from "@/components/shared/RequireSession";
 import { Alert } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableCell, TableHead, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAnchorDashboard } from "@/hooks/useAnchorDashboard";
 import { formatCurrency } from "@/lib/currency";

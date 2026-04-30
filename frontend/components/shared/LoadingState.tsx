@@ -17,12 +17,6 @@ const SIZES = {
   lg: "h-8 w-8",
 };
 
-const CONTAINER_SIZES = {
-  sm: "h-8",
-  md: "h-12",
-  lg: "h-16",
-};
-
 /**
  * LoadingState - Multiple animation variants
  */

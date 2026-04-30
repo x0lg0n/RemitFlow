@@ -26,7 +26,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAnchorMarketplace } from "@/hooks/useAnchorMarketplace";
 import { useRates } from "@/hooks/useRates";
-import { useRecurringSends } from "@/hooks/useRecurringSends";
 import { useTransactions } from "@/hooks/useTransactions";
 import { formatCurrency } from "@/lib/currency";
 
@@ -34,7 +33,6 @@ export default function DashboardPage() {
   const { rates, isLoading: ratesLoading } = useRates();
   const { transactions, isLoading: txLoading } = useTransactions(1, 100);
   const { catalog } = useAnchorMarketplace();
-  const { pendingRuns } = useRecurringSends();
 
   // Process data for the chart
   const last7Days = Array.from({ length: 7 }, (_, i) => {

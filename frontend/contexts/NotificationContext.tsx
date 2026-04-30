@@ -43,6 +43,8 @@ export function NotificationProvider({
 }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
+  
+
   const addNotification = useCallback(
     (notification: Omit<Notification, "id">) => {
       const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -58,7 +60,7 @@ export function NotificationProvider({
       // Auto-remove if duration is set
       if (fullNotification.duration != null && fullNotification.duration > 0) {
         setTimeout(() => {
-          removeNotification(id);
+          setNotifications((prev) => prev.filter((n) => n.id !== id));
         }, fullNotification.duration);
       }
 
@@ -181,4 +183,9 @@ export function useNotification() {
     );
   }
   return context;
+}
+
+// Safe hook that returns the context or undefined when used outside a provider
+export function useMaybeNotification() {
+  return useContext(NotificationContext);
 }

@@ -111,22 +111,6 @@ export default function SendPage() {
     }
   }
 
-  const StepIndicator = ({ number, label, completed, active }: { number: number; label: string; completed: boolean; active: boolean }) => (
-    <div className="flex flex-col items-center gap-2">
-      <div className={cn(
-        "flex h-12 w-12 items-center justify-center rounded-2xl font-black text-lg transition-all",
-        active 
-          ? "bg-blue-500 text-white shadow-[0_0_20px_-5px_rgba(59,130,246,0.8)]" 
-          : completed 
-          ? "bg-emerald-500/10 border-2 border-emerald-500/30 text-emerald-400"
-          : "bg-(--surface-elevated) border-2 border-(--border) text-(--foreground-muted)"
-      )}>
-        {completed ? <Check className="h-5 w-5" /> : number}
-      </div>
-      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-(--foreground-subtle)">{label}</span>
-    </div>
-  );
-
   return (
     <RequireSession>
       <div className="max-w-6xl mx-auto space-y-12 py-8 px-4 animate-fade-in sm:px-0">
@@ -470,5 +454,23 @@ export default function SendPage() {
         </Card>
       </div>
     </RequireSession>
+  );
+}
+
+function StepIndicator({ number, label, completed, active }: { number: number; label: string; completed: boolean; active: boolean }) {
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className={cn(
+        "flex h-12 w-12 items-center justify-center rounded-2xl font-black text-lg transition-all",
+        active
+          ? "bg-blue-500 text-white shadow-[0_0_20px_-5px_rgba(59,130,246,0.8)]"
+          : completed
+          ? "bg-emerald-500/10 border-2 border-emerald-500/30 text-emerald-400"
+          : "bg-(--surface-elevated) border-2 border-(--border) text-(--foreground-muted)"
+      )}>
+        {completed ? <Check className="h-5 w-5" /> : number}
+      </div>
+      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-(--foreground-subtle)">{label}</span>
+    </div>
   );
 }

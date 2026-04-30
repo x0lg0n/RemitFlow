@@ -8,7 +8,6 @@ import {
   Globe, 
   Plus, 
   Star, 
-  Info, 
   ExternalLink, 
   Zap, 
   Shield, 

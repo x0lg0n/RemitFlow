@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { DayPicker, useDayPicker, useNavigation } from "react-day-picker"
+import { DayPicker, useNavigation } from "react-day-picker"
 import { format, setMonth, setYear } from "date-fns"
 
 import { cn } from "@/lib/utils"

@@ -63,7 +63,7 @@ async function api<T>(path: string, options: RequestInit = {}, authToken?: strin
   let payload: ApiResponse<T>;
   try {
     payload = JSON.parse(normalizedBody) as ApiResponse<T>;
-  } catch (err) {
+  } catch {
     throw new Error(
       `Failed to parse JSON response from ${path}. ` +
         `Status: ${response.status}. ` +
