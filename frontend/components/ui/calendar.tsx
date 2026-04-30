@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
 import { DayPicker, useDayPicker, useNavigation } from "react-day-picker"
 import { format, setMonth, setYear } from "date-fns"
 
@@ -27,7 +26,6 @@ function Calendar({
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn("p-4", className)}
-      captionLayout="dropdown-buttons"
       fromYear={2020}
       toYear={2030}
       classNames={{
@@ -37,7 +35,7 @@ function Calendar({
         caption_label: "text-[10px] font-black uppercase tracking-widest",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
-          buttonVariants({ variant: "outline" }),
+          buttonVariants({ variant: "secondary" }),
           "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100 hover:bg-black hover:text-white rounded-lg transition-all border-(--border)"
         ),
         nav_button_previous: "absolute left-2",
@@ -65,9 +63,7 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
-        Caption: ({ displayMonth }) => {
+        MonthCaption: ({ calendarMonth }) => {
           const { goToMonth } = useNavigation();
           const months = Array.from({ length: 12 }, (_, i) => ({
             value: i.toString(),
@@ -81,8 +77,8 @@ function Calendar({
           return (
             <div className="flex justify-center pt-2 relative items-center gap-2">
               <Select
-                onValueChange={(value) => goToMonth(setMonth(displayMonth, parseInt(value)))}
-                value={displayMonth.getMonth().toString()}
+                onValueChange={(value) => goToMonth(setMonth(calendarMonth.date, parseInt(value)))}
+                value={calendarMonth.date.getMonth().toString()}
               >
                 <SelectTrigger className="h-8 w-30 font-black uppercase text-[10px] tracking-widest border-(--border) rounded-lg bg-gray-50/50">
                   <SelectValue placeholder="Month" />
@@ -97,8 +93,8 @@ function Calendar({
               </Select>
 
               <Select
-                onValueChange={(value) => goToMonth(setYear(displayMonth, parseInt(value)))}
-                value={displayMonth.getFullYear().toString()}
+                onValueChange={(value) => goToMonth(setYear(calendarMonth.date, parseInt(value)))}
+                value={calendarMonth.date.getFullYear().toString()}
               >
                 <SelectTrigger className="h-8 w-20 font-black uppercase text-[10px] tracking-widest border-(--border) rounded-lg bg-gray-50/50">
                   <SelectValue placeholder="Year" />

@@ -137,7 +137,6 @@ export default function HistoryPage() {
           </div>
           <div className="flex items-center gap-3">
              <Button 
-               variant="outline" 
                onClick={handleExportCSV}
                className="group rounded-2xl font-black uppercase text-[10px] tracking-widest h-12 px-6 border-(--border) hover:bg-black hover:text-white hover:border-black transition-all duration-300"
              >
@@ -160,8 +159,7 @@ export default function HistoryPage() {
           
           <Popover>
             <PopoverTrigger asChild>
-              <Button 
-                variant="outline" 
+              <Button  
                 className={cn(
                   "h-14 rounded-2xl border-(--border) bg-white font-black uppercase text-[10px] tracking-widest hover:bg-black hover:text-white hover:border-black transition-all duration-300 group w-full",
                   !date && "text-muted-foreground"
@@ -198,7 +196,7 @@ export default function HistoryPage() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-14 rounded-2xl border-(--border) bg-white font-black uppercase text-[10px] tracking-widest hover:bg-black hover:text-white hover:border-black transition-all duration-300 group relative w-full">
+              <Button variant="secondary" className="h-14 rounded-2xl border-(--border) bg-white font-black uppercase text-[10px] tracking-widest hover:bg-black hover:text-white hover:border-black transition-all duration-300 group relative w-full">
                 <Filter className="mr-2 h-4 w-4 text-emerald-500 group-hover:text-emerald-400" />
                 {statusFilter === "all" ? "All Filters" : `Status: ${statusFilter}`}
                 <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
@@ -277,13 +275,13 @@ export default function HistoryPage() {
                            </span>
                         </TableCell>
                         <TableCell className="px-8">
-                           <Badge variant="outline" className={`rounded-xl border h-7 px-3 flex items-center gap-1.5 font-black text-[8px] uppercase tracking-tighter ${getStatusStyle(tx.status)}`}>
+                           <Badge className={`rounded-xl border h-7 px-3 flex items-center gap-1.5 font-black text-[8px] uppercase tracking-tighter ${getStatusStyle(tx.status)}`}>
                               {getStatusIcon(tx.status)}
                               {tx.status}
                            </Badge>
                         </TableCell>
                         <TableCell className="px-8 text-right">
-                           <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                           <Button variant="ghost"  className="h-8 w-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
                               <MoreVertical className="h-4 w-4" />
                            </Button>
                         </TableCell>
@@ -300,7 +298,7 @@ export default function HistoryPage() {
              </div>
              <div className="flex gap-2">
                 <Button 
-                  variant="outline" 
+                  variant="secondary" 
                   size="sm" 
                   disabled={page === 1}
                   onClick={() => setPage(p => p - 1)}
@@ -309,7 +307,7 @@ export default function HistoryPage() {
                    <ChevronLeft className="mr-1 h-3 w-3" /> Previous
                 </Button>
                 <Button 
-                  variant="outline" 
+                  variant="secondary" 
                   size="sm"
                   disabled={filteredTransactions.length < 50}
                   onClick={() => setPage(p => p + 1)}

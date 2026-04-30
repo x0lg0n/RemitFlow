@@ -3,6 +3,8 @@ import type { AnchorRate } from "@/types/rate";
 export interface ComparedRate {
   anchorId: string;
   anchorName: string;
+  fromCurrency: string;
+  toCurrency: string;
   feeMinor: number;
   totalCostMinor: number;
   destinationAmountMinor: number;
@@ -17,6 +19,8 @@ export function compareRates(rates: AnchorRate[], amountMinor: number): Compared
       return {
         anchorId: rate.anchorId,
         anchorName: rate.anchorName,
+        fromCurrency: rate.fromCurrency,
+        toCurrency: rate.toCurrency,
         feeMinor,
         totalCostMinor: amountMinor + feeMinor,
         destinationAmountMinor: Math.floor(amountMinor * rate.fxRate),

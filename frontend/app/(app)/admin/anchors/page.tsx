@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAdminAnchors } from "@/hooks/useAdminAnchors";
 import type { CatalogAvailabilityStatus } from "@/types/marketplace";
 
@@ -19,7 +19,7 @@ export default function AdminAnchorsPage() {
     <RequireSession allowedRoles={["admin"]}>
       <div className="space-y-6">
         <h1 className="text-2xl font-semibold">Admin Anchor Control</h1>
-        <p className="text-sm text-[var(--muted)]">
+        <p className="text-sm text-(--muted)">
           Review user-submitted anchors and publish/unpublish marketplace catalog entries.
         </p>
 
@@ -36,7 +36,7 @@ export default function AdminAnchorsPage() {
             {submissions.map((submission) => (
               <div
                 key={submission.id}
-                className="space-y-3 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] p-4"
+                className="space-y-3 rounded-lg border border-(--border) bg-(--surface-elevated) p-4"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="font-medium">{submission.anchorName}</p>
@@ -56,7 +56,7 @@ export default function AdminAnchorsPage() {
                   Country: {submission.countryCode ?? "N/A"} | Currencies:{" "}
                   {submission.supportedCurrencies.join(", ") || "N/A"}
                 </p>
-                <p className="text-xs text-[var(--muted)]">{submission.notes ?? "No notes"}</p>
+                <p className="text-xs text-(--muted)">{submission.notes ?? "No notes"}</p>
 
                 <Input
                   value={noteBySubmission[submission.id] ?? ""}
@@ -103,28 +103,32 @@ export default function AdminAnchorsPage() {
             {catalog.map((entry) => (
               <div
                 key={entry.id}
-                className="grid gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface-elevated)] p-4 md:grid-cols-4"
+                className="grid gap-3 rounded-lg border border-(--border) bg-(--surface-elevated) p-4 md:grid-cols-4"
               >
                 <div className="md:col-span-2">
                   <p className="font-medium">{entry.displayName}</p>
-                  <p className="text-xs text-[var(--muted)]">
+                  <p className="text-xs text-(--muted)">
                     {entry.countryCode} | {entry.anchorId ?? "Not integrated"}
                   </p>
                 </div>
                 <div>
                   <Select
                     value={entry.availabilityStatus}
-                    onChange={(event) =>
+                    onValueChange={(value) =>
                       void patchCatalog(entry.id, {
-                        availabilityStatus: event.target.value as CatalogAvailabilityStatus,
+                        availabilityStatus: value as CatalogAvailabilityStatus,
                       })
                     }
-                    options={[
-                      { value: "available", label: "Available" },
-                      { value: "pending", label: "Pending" },
-                      { value: "disabled", label: "Disabled" },
-                    ]}
-                  />
+                  >
+                    <SelectTrigger className="mt-2">
+                      <SelectValue placeholder="Select availability" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="available">Available</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="disabled">Disabled</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="flex gap-2">
                   <Button
