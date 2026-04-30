@@ -1,8 +1,24 @@
-# RemitFlow - Project Plan
+# Volara - Project Plan
 
 **Version:** 1.0  
 **Last Updated:** April 2026  
 **Project Duration:** 18 weeks (6 weeks MVP + 12 weeks post-grant)
+
+---
+
+## Production Feature Plan Status (April 27, 2026)
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Anchor Marketplace | Implemented | User-level activate/deactivate, catalog browsing, custom anchor submissions |
+| Admin Bootstrap + Wallet Login | Implemented | `admin_wallets` table + bootstrap script + admin review routes/UI |
+| Recurring Sends | Implemented | Scheduled draft creation with per-cycle user confirmation |
+| Route Filtering by User Preferences | Implemented | Authenticated rates and transaction route validation respect active anchors |
+| Audit Logging | Implemented | Admin actions and recurring lifecycle events recorded in `audit_events` |
+| Production Docs/API Updates | Implemented | README + API docs updated with new flow and commands |
+| Metrics Dashboard + Admin View | Implemented | Admin metrics page with DAU/MAU/volume/retention + reconciliation panel |
+| Blockchain Indexing/Reconciliation | Implemented | Horizon verification worker + reconciliation APIs + status UI |
+| Structured Logging Baseline | Implemented | JSON logger + request logging + error middleware integration |
 
 ---
 

@@ -1,6 +1,6 @@
-# RemitFlow API Documentation
+# Volara API Documentation
 
-Comprehensive API documentation for the RemitFlow backend service.
+Comprehensive API documentation for the Volara backend service.
 
 **Base URL:** `http://localhost:3001` (development)  
 **Version:** 1.0.0  
@@ -18,12 +18,13 @@ Comprehensive API documentation for the RemitFlow backend service.
 6. [Health & Status](#health--status)
 7. [Error Handling](#error-handling)
 8. [Rate Limiting](#rate-limiting)
+9. [Production Additions (April 27, 2026)](#production-additions-april-27-2026)
 
 ---
 
 ## Authentication
 
-RemitFlow uses **SEP-10** (Stellar Ecosystem Proposal) for wallet-based authentication.
+Volara uses **SEP-10** (Stellar Ecosystem Proposal) for wallet-based authentication.
 
 ### Step 1: Get Challenge
 
@@ -433,6 +434,71 @@ Content-Type: application/json
 
 ---
 
+## Production Additions (April 27, 2026)
+
+### Marketplace Endpoints
+
+- `GET /anchors/catalog`
+  - Public endpoint.
+  - If authenticated, response is personalized with `isActiveForUser`.
+- `GET /anchors/preferences/me`
+  - Requires auth.
+  - Returns the caller wallet's marketplace preferences.
+- `POST /anchors/preferences/:anchorId/activate`
+  - Requires auth.
+  - Activates a catalog anchor for the caller.
+- `DELETE /anchors/preferences/:anchorId`
+  - Requires auth.
+  - Deactivates a catalog anchor for the caller.
+- `POST /anchors/submissions`
+  - Requires auth.
+  - Creates a user anchor submission for admin review.
+
+### Admin Anchor Endpoints
+
+- `GET /admin/anchors/submissions`
+  - Requires admin role.
+  - Optional query: `status=pending|approved|rejected`.
+- `POST /admin/anchors/submissions/:id/approve`
+  - Requires admin role.
+  - Marks a pending submission as approved and publishes it into catalog as pending integration.
+- `POST /admin/anchors/submissions/:id/reject`
+  - Requires admin role.
+  - Marks a pending submission as rejected.
+- `PATCH /admin/anchors/catalog/:id`
+  - Requires admin role.
+  - Supports `isPublished`, `availabilityStatus`, `rating`, `notes`, `feeEstimate`, `displayName`.
+
+### Recurring Send Endpoints
+
+- `POST /recurring-sends`
+  - Requires auth.
+  - Creates recurring plan (`daily`, `weekly`, `monthly`).
+- `GET /recurring-sends`
+  - Requires auth.
+  - Returns `plans` + `pendingRuns` for caller.
+- `PATCH /recurring-sends/:id`
+  - Requires auth.
+  - Updates mutable plan fields owned by caller.
+- `POST /recurring-sends/:id/pause`
+  - Requires auth.
+  - Pauses caller plan.
+- `POST /recurring-sends/:id/resume`
+  - Requires auth.
+  - Resumes caller plan.
+- `POST /recurring-sends/:id/cancel`
+  - Requires auth.
+  - Cancels caller plan.
+- `POST /recurring-sends/runs/:runId/confirm`
+  - Requires auth.
+  - Confirms a pending recurring draft and executes the existing SEP-31 flow.
+
+### Admin Bootstrap Command
+
+- Command: `cd backend && npm run bootstrap:admin -- <WALLET_ADDRESS> [CREATED_BY_WALLET]`
+- This creates or upserts the first admin wallet in `admin_wallets`.
+
+
 ## Callbacks
 
 ### SEP-31 Webhook Callback
@@ -569,6 +635,47 @@ Once the backend is running, access:
 
 ---
 
+## Production Readiness Endpoints (Level-6)
+
+### Admin Metrics
+
+- `GET /metrics/overview`
+- `GET /metrics/transactions?days=30`
+- `GET /metrics/retention?weeks=8`
+
+### Anchor Marketplace
+
+- `GET /anchors/catalog`
+- `GET /anchors/preferences/me`
+- `POST /anchors/preferences/:anchorId/activate`
+- `DELETE /anchors/preferences/:anchorId`
+- `POST /anchors/submissions`
+
+### Admin Anchor Controls
+
+- `GET /admin/anchors/submissions`
+- `POST /admin/anchors/submissions/:id/approve`
+- `POST /admin/anchors/submissions/:id/reject`
+- `PATCH /admin/anchors/catalog/:id`
+
+### Recurring Sends
+
+- `POST /recurring-sends`
+- `GET /recurring-sends`
+- `PATCH /recurring-sends/:id`
+- `POST /recurring-sends/:id/pause`
+- `POST /recurring-sends/:id/resume`
+- `POST /recurring-sends/:id/cancel`
+- `POST /recurring-sends/runs/:runId/confirm`
+
+### Data Indexing / Reconciliation
+
+- `GET /indexing/summary`
+- `GET /indexing/recent?limit=25`
+- `POST /indexing/reconcile-now`
+
+---
+
 ## SDK Examples
 
 ### JavaScript/TypeScript
@@ -629,4 +736,4 @@ curl -X POST http://localhost:3001/rates/best \
 
 **Last Updated:** April 2026  
 **API Version:** 1.0.0  
-**Maintained By:** RemitFlow Team
+**Maintained By:** Volara Team
