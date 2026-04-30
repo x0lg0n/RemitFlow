@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Globe, ArrowRight, Search, Filter } from "lucide-react";
+import { Globe, ArrowRight, Search, Filter, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -109,102 +109,118 @@ export default function CorridorsPage() {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Header */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-emerald-500/20 border border-blue-500/30">
-            <Globe className="h-6 w-6 text-blue-400" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-white">
-              Currency Corridors
-            </h1>
-            <p className="text-sm text-[var(--foreground-muted)] mt-1">
-              Available routes for cross-border payments
-            </p>
+      <div className="relative overflow-hidden rounded-4xl border-2 border-(--border) bg-(--surface) p-10 md:p-16 shadow-2xl">
+        <div className="absolute inset-0 bg-linear-to-br from-blue-500/10 via-transparent to-emerald-500/10 pointer-events-none" />
+        <div className="relative space-y-4">
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-blue-500/20 border-2 border-blue-500/30">
+              <Globe className="h-7 w-7 text-blue-400" />
+            </div>
+            <div>
+              <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter bg-linear-to-b from-(--foreground) to-(--foreground-muted) bg-clip-text text-transparent">
+                Currency Corridors
+              </h1>
+              <p className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-(--foreground-muted) mt-2">
+                Discover available routes for global remittances
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="p-6 hover-lift">
-          <div className="text-3xl font-bold text-white mb-1">
+      <div className="grid gap-6 md:grid-cols-4">
+        <Card className="p-6 border-2 border-blue-500/30 bg-blue-500/10 rounded-3xl">
+          <div className="flex items-center gap-3 mb-3">
+            <Globe className="h-5 w-5 text-blue-400" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Routes</span>
+          </div>
+          <div className="text-4xl font-black text-blue-400 italic mb-1">
             {corridors.length}
           </div>
-          <div className="text-sm text-[var(--foreground-subtle)]">
-            Total Corridors
+          <div className="text-[10px] font-bold uppercase tracking-widest text-(--foreground-muted)">
+            Total Active
           </div>
         </Card>
-        <Card className="p-6 hover-lift">
-          <div className="text-3xl font-bold text-blue-400 mb-1">
+        <Card className="p-6 border-2 border-blue-500/30 bg-blue-500/10 rounded-3xl">
+          <div className="flex items-center gap-3 mb-3">
+            <TrendingUp className="h-5 w-5 text-blue-400" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Assets</span>
+          </div>
+          <div className="text-4xl font-black text-blue-400 italic mb-1">
             {new Set(corridors.map((c) => c.fromCurrency)).size}
           </div>
-          <div className="text-sm text-[var(--foreground-subtle)]">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-(--foreground-muted)">
             Source Currencies
           </div>
         </Card>
-        <Card className="p-6 hover-lift">
-          <div className="text-3xl font-bold text-emerald-400 mb-1">
+        <Card className="p-6 border-2 border-emerald-500/30 bg-emerald-500/10 rounded-3xl">
+          <div className="flex items-center gap-3 mb-3">
+            <ArrowRight className="h-5 w-5 text-emerald-400" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">Routes</span>
+          </div>
+          <div className="text-4xl font-black text-emerald-400 italic mb-1">
             {new Set(corridors.map((c) => c.destinationCountry)).size}
           </div>
-          <div className="text-sm text-[var(--foreground-subtle)]">
-            Destination Countries
+          <div className="text-[10px] font-bold uppercase tracking-widest text-(--foreground-muted)">
+            Destinations
           </div>
         </Card>
-        <Card className="p-6 hover-lift">
-          <div className="text-3xl font-bold text-purple-400 mb-1">
+        <Card className="p-6 border-2 border-purple-500/30 bg-purple-500/10 rounded-3xl">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="h-5 w-5 rounded bg-purple-500/30" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-purple-400">Fee</span>
+          </div>
+          <div className="text-4xl font-black text-purple-400 italic mb-1">
             {corridors.length > 0 ?
               Math.min(...corridors.map((c) => c.minFee)).toFixed(1)
-            : "0"}
-            %
+            : "0"}%
           </div>
-          <div className="text-sm text-[var(--foreground-subtle)]">
-            Lowest Fee
+          <div className="text-[10px] font-bold uppercase tracking-widest text-(--foreground-muted)">
+            Best Rate
           </div>
         </Card>
       </div>
 
       {/* Filters */}
-      <Card className="hover-lift">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-[var(--foreground-muted)]" />
-            <CardTitle>Filter Corridors</CardTitle>
-          </div>
-          <CardDescription>
-            Search and filter available currency routes
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
+      <Card className="border-2 border-(--border) bg-(--surface) rounded-4xl shadow-lg overflow-hidden">
+        <CardHeader className="p-8 border-b border-(--border)/50 bg-(--surface-elevated)/30">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/20">
+              <Filter className="h-5 w-5 text-blue-400" />
+            </div>
             <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[var(--foreground-subtle)]">
-                Search
-              </label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--foreground-muted)]" />
+              <CardTitle className="text-2xl font-black text-(--foreground) tracking-tighter italic">Search & Filter</CardTitle>
+              <CardDescription className="font-bold text-(--foreground-subtle) uppercase text-[10px] tracking-[0.2em] mt-1">Find your perfect corridor</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-8 space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <label className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-(--foreground-subtle)">Search</label>
+              <div className="relative group">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-(--foreground-subtle) group-focus-within:text-blue-400 transition-colors" />
                 <Input
                   type="text"
                   placeholder="Search currencies, countries, anchors..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-12 h-12 rounded-2xl border-2 focus:border-blue-500 transition-all bg-(--surface-elevated) font-bold"
                 />
               </div>
             </div>
             <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[var(--foreground-subtle)]">
-                Destination Country
-              </label>
+              <label className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-(--foreground-subtle)">Destination Country</label>
               <select
                 value={selectedCountry}
                 onChange={(e) => setSelectedCountry(e.target.value)}
-                className="w-full rounded-xl border border-[var(--border)] bg-white/5 px-4 py-3 text-sm text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                className="w-full h-12 rounded-2xl border-2 border-(--border) bg-(--surface-elevated) px-4 text-sm font-bold text-(--foreground) focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
                 {countries.map((country) => (
                   <option
                     key={country}
                     value={country}
-                    className="bg-slate-900">
+                    className="bg-(--surface) text-(--foreground)">
                     {country === "all" ? "All Countries" : country}
                   </option>
                 ))}
@@ -215,85 +231,96 @@ export default function CorridorsPage() {
       </Card>
 
       {/* Error Display */}
-      {error && <Alert variant="error">{error}</Alert>}
+      {error && (
+        <Alert className="rounded-3xl border-2 border-red-500/30 bg-red-500/10">
+          <div className="text-red-400 font-bold">{error}</div>
+        </Alert>
+      )}
 
       {/* Corridors Grid */}
-      {isLoading ?
+      {isLoading ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
-            <Card key={i} className="p-6">
+            <Card key={i} className="p-6 rounded-3xl border-2 border-(--border)">
               <Skeleton className="h-6 w-3/4 mb-4" />
               <Skeleton className="h-4 w-1/2 mb-2" />
               <Skeleton className="h-4 w-2/3" />
             </Card>
           ))}
         </div>
-      : filteredCorridors.length === 0 ?
-        <Alert variant="info">
-          No corridors match your search criteria. Try adjusting your filters.
+      ) : filteredCorridors.length === 0 ? (
+        <Alert className="rounded-3xl border-2 border-amber-500/30 bg-amber-500/10">
+          <div className="text-amber-400 font-bold">
+            No corridors match your search criteria. Try adjusting your filters.
+          </div>
         </Alert>
-      : <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredCorridors.map((corridor) => (
-            <Card key={corridor.key} className="hover-lift group">
-              <CardHeader className="pb-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <span className="text-blue-400">
+            <Card
+              key={corridor.key}
+              className="border-2 border-(--border) bg-(--surface-elevated)/50 rounded-4xl group overflow-hidden hover:shadow-lg transition-all"
+            >
+              <CardHeader className="pb-6 pt-8 px-8 border-b border-(--border)/50">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5 text-blue-400" />
+                      <div className="text-xl font-black text-blue-400 italic uppercase">
                         {corridor.fromCurrency}
-                      </span>
-                      <ArrowRight className="h-4 w-4 text-[var(--foreground-muted)]" />
-                      <span className="text-emerald-400">
+                      </div>
+                      <ArrowRight className="h-5 w-5 text-(--foreground-muted)" />
+                      <div className="text-xl font-black text-emerald-400 italic uppercase">
                         {corridor.toCurrency}
-                      </span>
-                    </CardTitle>
-                    <CardDescription className="mt-2">
-                      {corridor.destinationCountry}
-                    </CardDescription>
+                      </div>
+                    </div>
+                    <div className="text-sm font-bold text-(--foreground-muted) uppercase tracking-wider">
+                      {corridor.destinationCountry} Protocol
+                    </div>
                   </div>
-                  <Badge variant="success" className="text-xs">
-                    {corridor.anchors.length} Anchor
-                    {corridor.anchors.length > 1 ? "s" : ""}
+                  <Badge className="font-black text-[9px] uppercase px-3 py-1 border-none bg-blue-500/20 text-blue-400">
+                    {corridor.anchors.length} Anchor{corridor.anchors.length > 1 ? "s" : ""}
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-8 space-y-5">
                 {/* Fee Range */}
-                <div className="rounded-xl bg-white/5 border border-[var(--border)] p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold uppercase tracking-wide text-[var(--foreground-subtle)]">
+                <div className="rounded-3xl bg-(--surface)/50 border-2 border-(--border) p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-(--foreground-subtle)">
                       Fee Range
                     </span>
-                    <Badge variant="primary" className="text-xs">
+                    <Badge className="font-black text-[9px] uppercase px-3 py-1 border-none bg-emerald-500/20 text-emerald-400">
                       Best: {corridor.minFee.toFixed(1)}%
                     </Badge>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-[var(--foreground-muted)]">
-                      {corridor.minFee.toFixed(1)}% -{" "}
-                      {corridor.maxFee.toFixed(1)}%
-                    </span>
+                  <div className="text-2xl font-black text-emerald-400 tracking-tight">
+                    {corridor.minFee.toFixed(1)}{" "}
+                    <span className="text-(--foreground-muted) text-base">–</span> {corridor.maxFee.toFixed(1)}%
                   </div>
                 </div>
 
                 {/* Best Anchor */}
-                <div className="rounded-xl bg-white/5 border border-[var(--border)] p-4">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-[var(--foreground-subtle)] mb-2">
-                    Best Rate
+                <div className="rounded-3xl bg-blue-500/10 border-2 border-blue-500/30 p-5">
+                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 mb-2">
+                    Best Rate Provider
                   </div>
-                  <div className="text-sm font-semibold text-white">
+                  <div className="text-lg font-black text-blue-400 italic">
                     {corridor.bestAnchor}
                   </div>
                 </div>
 
                 {/* All Anchors */}
                 <div>
-                  <div className="text-xs font-semibold uppercase tracking-wide text-[var(--foreground-subtle)] mb-2">
+                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-(--foreground-subtle) mb-3">
                     Available Anchors
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {corridor.anchors.map((anchor, idx) => (
-                      <Badge key={idx} variant="secondary" className="text-xs">
+                      <Badge
+                        key={idx}
+                        className="font-black text-[9px] uppercase px-3 py-1.5 border-2 border-(--border) bg-(--surface-elevated) text-(--foreground)"
+                      >
                         {anchor}
                       </Badge>
                     ))}
@@ -301,15 +328,18 @@ export default function CorridorsPage() {
                 </div>
 
                 {/* Action Button */}
-                <Button className="w-full group/btn" size="sm">
+                <Button
+                  className="w-full px-8 h-12 bg-blue-500 text-white font-black uppercase italic tracking-widest rounded-2xl shadow-[0_0_20px_-5px_rgba(59,130,246,0.5)] hover:bg-blue-400 transition-all transform active:scale-95 flex items-center justify-center gap-3"
+                  aria-label="Start a new transfer using this corridor"
+                >
                   Send via {corridor.bestAnchor}
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </CardContent>
             </Card>
           ))}
         </div>
-      }
+      )}
     </div>
   );
 }

@@ -7,10 +7,12 @@ import {
   CheckCircle2,
   Lock,
   Zap,
+  ArrowRight,
+  Globe,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Alert } from "@/components/ui/alert";
 import {
   Card,
@@ -20,10 +22,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRates } from "@/hooks/useRates";
 import { useSession } from "@/hooks/useSession";
 
 export default function LoginPage() {
   const { loginWithWallet, isLoading, error, session } = useSession();
+  const { rates, isLoading: isRatesLoading } = useRates();
   const router = useRouter();
 
   // Redirect to home if already logged in
@@ -37,198 +43,258 @@ export default function LoginPage() {
     try {
       await loginWithWallet();
       // If successful, session will be set and useEffect will redirect
-    } catch (err) {
+    } catch {
       // Error is already handled in SessionContext
       // User rejection or other errors will show in the error state
-      console.error("Login failed:", err);
     }
   };
 
+  const anchorCount = useMemo(
+    () => new Set(rates.map((rate) => rate.anchorName)).size,
+    [rates],
+  );
+
+  const corridorCount = useMemo(() => {
+    const uniqueCorridors = new Set(
+      rates.map(
+        (rate) =>
+          `${rate.fromCurrency}|${rate.toCurrency}|${rate.destinationCountry}`,
+      ),
+    );
+    return uniqueCorridors.size;
+  }, [rates]);
+
   return (
-    <div className="min-h-[calc(100vh-200px)] flex items-center justify-center py-12 px-6">
-      <div className="w-full max-w-2xl space-y-8 animate-fade-in">
+    <div className="min-h-[calc(100vh-200px)] py-10 px-6 md:py-12">
+      <div className="mx-auto w-full max-w-6xl space-y-6 animate-fade-in">
         {/* Back to Home Link */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm text-[var(--foreground-muted)] hover:text-white transition-colors group">
+          className="inline-flex items-center gap-2 text-sm text-(--foreground-muted) hover:text-(--foreground) transition-colors group">
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
           Back to Home
         </Link>
 
         {/* Main Content */}
-        <div className="grid gap-8 lg:grid-cols-5">
-          {/* Left Column - Info */}
-          <div className="lg:col-span-2 space-y-6 animate-slide-in">
-            <div>
-              <Badge variant="primary" className="mb-4">
-                <ShieldCheck className="h-3 w-3 mr-1" />
-                Secure Authentication
-              </Badge>
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-                Connect Your
-                <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
-                  {" "}
-                  Wallet
-                </span>
-              </h1>
-              <p className="text-[var(--foreground-muted)] leading-relaxed">
-                Sign in securely using Stellar&apos;s SEP-10 protocol. Your
-                private keys never leave your wallet.
-              </p>
-            </div>
+        <section className="relative overflow-hidden rounded-4xl border border-(--border) bg-linear-to-br from-white to-(--background-deep) p-6 shadow-(--shadow-lg) md:p-10">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-(--accent)/10 blur-3xl" />
+          <div className="pointer-events-none absolute -left-16 -bottom-16 h-56 w-56 rounded-full bg-(--primary)/8 blur-3xl" />
 
-            {/* Security Features */}
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 border border-blue-500/30 flex-shrink-0">
-                  <Lock className="h-5 w-5 text-blue-400" />
+          <div className="relative grid gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+            {/* Left Column - Info */}
+            <div className="space-y-7 animate-slide-in">
+              <div>
+                <Badge variant="secondary" className="rounded-full px-4 py-1.5">
+                  <ShieldCheck className="mr-1 h-3 w-3" />
+                  Secure Wallet Sign-in
+                </Badge>
+                <h1 className="mt-4 max-w-xl text-5xl leading-[0.96] text-(--foreground) md:text-6xl">
+                  Connect once. Route smarter every time.
+                </h1>
+                <p className="mt-4 max-w-lg text-base leading-relaxed text-(--foreground-muted)">
+                  Sign in with SEP-10 and unlock live cross-border corridor
+                  comparisons, transparent fee math, and better payout routes.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-(--border) bg-white/85 p-4 shadow-(--shadow-sm)">
+                  <div className="text-xs font-semibold uppercase tracking-widest text-(--foreground-subtle)">
+                    Partnered Anchors
+                  </div>
+                  {isRatesLoading ?
+                    <Skeleton className="mt-2 h-8 w-20 rounded-md" />
+                  : <div className="mt-2 text-3xl font-extrabold text-(--foreground)">
+                      {anchorCount}
+                    </div>
+                  }
                 </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-white mb-1">
-                    Non-Custodial
-                  </h3>
-                  <p className="text-xs text-[var(--foreground-subtle)]">
-                    Your keys, your crypto. We never access your private keys.
-                  </p>
+                <div className="rounded-xl border border-(--border) bg-white/85 p-4 shadow-(--shadow-sm)">
+                  <div className="text-xs font-semibold uppercase tracking-widest text-(--foreground-subtle)">
+                    Active Corridors
+                  </div>
+                  {isRatesLoading ?
+                    <Skeleton className="mt-2 h-8 w-20 rounded-md" />
+                  : <div className="mt-2 text-3xl font-extrabold text-(--foreground)">
+                      {corridorCount}
+                    </div>
+                  }
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex-shrink-0">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-400" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-white mb-1">
-                    SEP-10 Verified
-                  </h3>
-                  <p className="text-xs text-[var(--foreground-subtle)]">
-                    Industry-standard authentication protocol for Stellar.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10 border border-purple-500/30 flex-shrink-0">
-                  <Zap className="h-5 w-5 text-purple-400" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-white mb-1">
-                    Instant Access
-                  </h3>
-                  <p className="text-xs text-[var(--foreground-subtle)]">
-                    One-click wallet connection, no passwords needed.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column - Connect Card */}
-          <div className="lg:col-span-3 animate-fade-in-up">
-            <Card className="border-white/10 backdrop-blur-xl bg-white/5">
-              <CardHeader className="pb-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-emerald-500">
-                    <Wallet className="h-6 w-6 text-white" />
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-blue-500/30 bg-blue-500/10">
+                    <Lock className="h-5 w-5 text-blue-400" />
                   </div>
                   <div>
-                    <CardTitle className="text-2xl">Connect Wallet</CardTitle>
-                    <CardDescription className="mt-1">
-                      Choose your wallet to get started
-                    </CardDescription>
+                    <h3 className="mb-1 text-sm font-semibold text-(--foreground)">
+                      Non-custodial
+                    </h3>
+                    <p className="text-xs text-(--foreground-subtle)">
+                      Private keys stay in your wallet. We only verify signed
+                      challenge transactions.
+                    </p>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Freighter Wallet Button */}
-                <button
-                  onClick={handleLogin}
-                  disabled={isLoading}
-                  className="w-full group relative overflow-hidden rounded-xl border-2 border-blue-500/30 bg-gradient-to-r from-blue-500/10 to-emerald-500/10 p-6 hover:border-blue-500/60 hover:from-blue-500/20 hover:to-emerald-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                  <div className="relative flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/10 border border-white/20">
-                        <ShieldCheck className="h-7 w-7 text-blue-400" />
+
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                  </div>
+                  <div>
+                    <h3 className="mb-1 text-sm font-semibold text-(--foreground)">
+                      SEP-10 verified
+                    </h3>
+                    <p className="text-xs text-(--foreground-subtle)">
+                      Protocol-standard Stellar authentication for safer sign-in
+                      and session management.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-purple-500/30 bg-purple-500/10">
+                    <Zap className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <h3 className="mb-1 text-sm font-semibold text-(--foreground)">
+                      Instant access
+                    </h3>
+                    <p className="text-xs text-(--foreground-subtle)">
+                      No passwords. Connect once and start comparing live
+                      corridors in seconds.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-(--border) bg-white/90 p-4 shadow-(--shadow-sm)">
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-(--foreground-subtle)" />
+                  <p className="text-xs font-semibold uppercase tracking-widest text-(--foreground-subtle)">
+                    Trusted by cross-border teams
+                  </p>
+                </div>
+                <p className="mt-2 text-sm text-(--foreground-muted)">
+                  “The quote preview and route transparency make every transfer
+                  decision easier and faster.”
+                </p>
+              </div>
+            </div>
+
+            {/* Right Column - Connect Card */}
+            <div className="animate-fade-in-up">
+              <Card className="border-(--border) bg-white/80 backdrop-blur-xl shadow-(--shadow-2xl) rounded-[2.5rem] overflow-hidden relative">
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-blue-500 via-(--primary) to-emerald-500" />
+
+                <CardHeader className="pt-10 pb-6 px-8 text-center">
+                  <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-linear-to-br from-blue-500 to-emerald-500 shadow-(--shadow-glow) shadow-blue-500/20 transform -rotate-3 hover:rotate-0 transition-transform duration-500">
+                    <Wallet className="h-10 w-10 text-white" />
+                  </div>
+                  <CardTitle className="text-3xl font-black text-(--foreground) tracking-tight">
+                    Welcome back
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-base font-medium text-(--foreground-muted)">
+                    Securely access your RemitFlow account through Stellar
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="space-y-6 px-8 pb-10">
+                  <button
+                    onClick={handleLogin}
+                    disabled={isLoading}
+                    className="group relative w-full overflow-hidden rounded-3xl border-2 border-(--border) bg-white p-6 text-left transition-all hover:border-(--primary) hover:shadow-(--shadow-md) disabled:cursor-not-allowed disabled:opacity-60">
+                    <div className="flex items-center gap-5">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-(--border) bg-(--surface-elevated) group-hover:bg-(--primary)/5 transition-colors">
+                        <ShieldCheck className="h-8 w-8 text-blue-500" />
                       </div>
-                      <div className="text-left">
-                        <div className="text-lg font-semibold text-white mb-1">
-                          Freighter Wallet
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xl font-black text-(--foreground) tracking-tight">
+                            Freighter
+                          </span>
+                          <ArrowRight className="h-5 w-5 text-(--primary) transition-transform group-hover:translate-x-1" />
                         </div>
-                        <div className="text-sm text-[var(--foreground-muted)]">
-                          Recommended for Stellar
+                        <div className="text-xs font-bold uppercase tracking-wider text-(--foreground-subtle)">
+                          Recommended Authentication
                         </div>
                       </div>
                     </div>
-                    {isLoading ?
-                      <div className="flex items-center gap-2 text-blue-400">
-                        <div className="h-5 w-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-                        <span className="text-sm font-medium">
-                          Connecting...
-                        </span>
+
+                    {isLoading && (
+                      <div className="absolute inset-x-0 bottom-0 h-1 bg-(--primary)/10">
+                        <div className="h-full bg-(--primary) animate-progress-glow w-1/3" />
                       </div>
-                    : <div className="text-sm font-medium text-blue-400 group-hover:translate-x-1 transition-transform">
-                        Connect →
+                    )}
+                  </button>
+
+                  <div className="space-y-4 rounded-3xl border border-(--border) bg-(--surface-elevated)/50 p-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="h-1 w-4 rounded-full bg-(--primary)" />
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-(--foreground-subtle)">
+                        Authentication Flow
+                      </p>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4 group/item">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white border border-(--border) text-xs font-black text-(--foreground) group-hover/item:border-(--primary) transition-colors">
+                          1
+                        </div>
+                        <div className="text-sm font-bold text-(--foreground-muted)">
+                          Connect and sign challenge
+                        </div>
                       </div>
-                    }
-                  </div>
-                </button>
-
-                {/* Divider */}
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-[var(--border)]" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-[var(--surface)] px-2 text-[var(--foreground-subtle)]">
-                      Why connect a wallet?
-                    </span>
-                  </div>
-                </div>
-
-                {/* Benefits List */}
-                <div className="space-y-3 rounded-xl bg-white/5 border border-[var(--border)] p-4">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-[var(--foreground-muted)]">
-                      Access real-time anchor rates and comparisons
+                      <div className="flex items-center gap-4 group/item">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white border border-(--border) text-xs font-black text-(--foreground) group-hover/item:border-(--primary) transition-colors">
+                          2
+                        </div>
+                        <div className="text-sm font-bold text-(--foreground-muted)">
+                          Compare live corridor rates
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 group/item">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white border border-(--border) text-xs font-black text-(--foreground) group-hover/item:border-(--primary) transition-colors">
+                          3
+                        </div>
+                        <div className="text-sm font-bold text-(--foreground-muted)">
+                          Execute faster settlements
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-[var(--foreground-muted)]">
-                      Send money across borders with lowest fees
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-[var(--foreground-muted)]">
-                      Track transaction history and savings
-                    </div>
-                  </div>
-                </div>
 
-                {/* Error Message */}
-                {error && (
-                  <Alert variant="error" className="animate-fade-in">
-                    {error}
-                  </Alert>
-                )}
+                  {error ?
+                    <Alert className="rounded-2xl border-red-500/20 bg-red-500/5 text-red-600 font-bold text-sm animate-fade-in shadow-sm">
+                      {error}
+                    </Alert>
+                  : null}
 
-                {/* Help Text */}
-                <div className="text-center text-xs text-[var(--foreground-subtle)] pt-2">
-                  Don&apos;t have Freighter?{" "}
-                  <a
-                    href="https://www.freighter.app/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-400 hover:text-blue-300 hover:underline transition-colors">
-                    Download here
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
+                  <div className="flex flex-col gap-4">
+                    <div className="text-center text-xs font-bold text-(--foreground-subtle)">
+                      Don&apos;t have Freighter?{" "}
+                      <a
+                        href="https://www.freighter.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600! hover:text-blue-700! hover:underline decoration-2 underline-offset-4 transition-colors">
+                        Get it here
+                      </a>
+                    </div>
+
+                    <Link href="/" className="block">
+                      <Button
+                        variant="ghost"
+                        className="h-12 w-full rounded-xl border border-(--border) bg-(--surface) text-sm font-bold text-(--foreground) hover:bg-(--surface-elevated) transition-all">
+                        Explore first
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );

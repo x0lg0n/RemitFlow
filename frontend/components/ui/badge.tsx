@@ -8,13 +8,18 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-white/5 border-[var(--border)] text-[var(--foreground-muted)]",
-        success: "bg-emerald-500/10 border-emerald-500/30 text-emerald-300",
-        warning: "bg-amber-500/10 border-amber-500/30 text-amber-300",
-        error: "bg-rose-500/10 border-rose-500/30 text-rose-300",
-        info: "bg-sky-500/10 border-sky-500/30 text-sky-300",
-        primary: "bg-blue-500/10 border-blue-500/30 text-blue-300",
-        secondary: "bg-zinc-500/10 border-zinc-500/30 text-zinc-300",
+          "bg-[var(--surface-elevated)] border-[var(--border)] text-[var(--foreground-muted)]",
+        success:
+          "bg-[var(--success-bg)] border-[var(--success-border)] text-[var(--success)]",
+        warning:
+          "bg-[var(--warning-bg)] border-[var(--warning-border)] text-[var(--warning)]",
+        error:
+          "bg-[var(--error-bg)] border-[var(--error-border)] text-[var(--error)]",
+        info: "bg-[var(--info-bg)] border-[var(--info-border)] text-[var(--info)]",
+        primary:
+          "bg-[var(--primary)]/10 border-[var(--primary)]/35 text-[var(--primary)]",
+        secondary:
+          "bg-[var(--accent)]/10 border-[var(--accent)]/35 text-[var(--accent)]",
       },
     },
     defaultVariants: {

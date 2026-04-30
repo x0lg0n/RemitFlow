@@ -11,11 +11,11 @@ export function Alert({
   ...props
 }: AlertProps) {
   const variantClass =
-    variant === "error" ? "border-red-500/40 bg-red-950/30 text-red-200"
+    variant === "error" ? "border-[var(--error-border)] bg-[var(--error-bg)] text-[var(--error)]"
     : variant === "success" ?
-      "border-emerald-500/40 bg-emerald-950/30 text-emerald-200"
-    : variant === "info" ? "border-sky-500/40 bg-sky-950/30 text-sky-200"
-    : "border-[var(--border)] bg-zinc-900/40 text-[var(--foreground)]";
+      "border-[var(--success-border)] bg-[var(--success-bg)] text-[var(--success)]"
+    : variant === "info" ? "border-[var(--info-border)] bg-[var(--info-bg)] text-[var(--info)]"
+    : "border-[var(--border)] bg-[var(--surface-elevated)] text-[var(--foreground)]";
 
   return (
     <div
