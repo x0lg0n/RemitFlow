@@ -1,72 +1,78 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 /* ============================================
-   REMITFLOW DESIGN SYSTEM - DARK MODE
-   Neo-Fintech Minimalism (Stripe/Wise inspired)
+   VOLARA DESIGN SYSTEM
+   Bold utility-fintech visual language
    ============================================ */
 
 :root {
+  color-scheme: dark;
+
   /* Background Colors */
-  --background: #0f172a; /* Slate 900 - Main page bg */
-  --background-deep: #020617; /* Slate 950 - Deep sections */
-  --surface: #1e293b; /* Slate 800 - Cards */
-  --surface-elevated: #334155; /* Slate 700 - Elevated elements */
+  --background: #081225;
+  --background-deep: #050b18;
+  --surface: #122038;
+  --surface-elevated: #1a2c4a;
 
   /* Foreground Colors */
-  --foreground: #f8fafc; /* Slate 50 - Primary text */
-  --foreground-muted: #94a3b8; /* Slate 400 - Secondary text */
-  --foreground-subtle: #64748b; /* Slate 500 - Tertiary text */
+  --foreground: #f5f9ff;
+  --foreground-muted: #b6c4dd;
+  --foreground-subtle: #8ea2c2;
 
   /* Card Colors */
-  --card: rgba(30, 41, 59, 0.6); /* Glassmorphism card */
-  --card-foreground: #f8fafc;
+  --card: rgba(18, 32, 56, 0.72);
+  --card-foreground: #f5f9ff;
 
   /* Primary (Trust Blue) */
-  --primary: #3b82f6; /* Blue 500 - Brand color */
-  --primary-hover: #2563eb; /* Blue 600 */
-  --primary-active: #1d4ed8; /* Blue 700 */
+  --primary: #2f6bff;
+  --primary-hover: #2459dc;
+  --primary-active: #1e49bd;
   --primary-foreground: #ffffff;
-  --primary-glow: rgba(59, 130, 246, 0.3);
+  --primary-glow: rgba(47, 107, 255, 0.32);
 
-  /* Accent (Success Green - Money/Savings) */
-  --accent: #10b981; /* Emerald 500 */
-  --accent-hover: #059669; /* Emerald 600 */
+  /* Accent (Trust Teal) */
+  --accent: #0faf9a;
+  --accent-hover: #0c9382;
   --accent-foreground: #ffffff;
 
   /* Semantic Colors */
-  --success: #10b981; /* Emerald 500 */
-  --success-bg: rgba(16, 185, 129, 0.1);
-  --success-border: rgba(16, 185, 129, 0.3);
+  --success: #22c55e;
+  --success-bg: rgba(34, 197, 94, 0.14);
+  --success-border: rgba(34, 197, 94, 0.38);
 
-  --warning: #f59e0b; /* Amber 500 */
-  --warning-bg: rgba(245, 158, 11, 0.1);
-  --warning-border: rgba(245, 158, 11, 0.3);
+  --warning: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.14);
+  --warning-border: rgba(245, 158, 11, 0.38);
 
-  --error: #f43f5e; /* Rose 500 */
-  --error-bg: rgba(244, 63, 94, 0.1);
-  --error-border: rgba(244, 63, 94, 0.3);
+  --error: #ef4444;
+  --error-bg: rgba(239, 68, 68, 0.14);
+  --error-border: rgba(239, 68, 68, 0.38);
 
-  --info: #0ea5e9; /* Sky 500 */
-  --info-bg: rgba(14, 165, 233, 0.1);
-  --info-border: rgba(14, 165, 233, 0.3);
+  --info: #38bdf8;
+  --info-bg: rgba(56, 189, 248, 0.14);
+  --info-border: rgba(56, 189, 248, 0.38);
 
   /* UI Elements */
-  --muted: #94a3b8; /* Slate 400 */
-  --border: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.12);
-  --ring: #3b82f6;
+  --muted: #8ea2c2;
+  --border: rgba(170, 190, 225, 0.22);
+  --border-hover: rgba(196, 212, 241, 0.42);
+  --ring: #2f6bff;
   --ring-opacity: 0.3;
 
   /* Gradients */
   --gradient-hero: linear-gradient(
     135deg,
-    #0f172a 0%,
-    #1e3a8a 50%,
-    #0f172a 100%
+    #081225 0%,
+    #102441 48%,
+    #0a1d36 100%
   );
-  --gradient-primary: linear-gradient(135deg, #3b82f6, #2563eb);
-  --gradient-accent: linear-gradient(135deg, #10b981, #059669);
+  --gradient-primary: linear-gradient(135deg, #2f6bff, #2459dc);
+  --gradient-accent: linear-gradient(135deg, #0faf9a, #0c9382);
+
+  /* Skeleton */
+  --skeleton-base: rgba(30, 51, 86, 0.38);
+  --skeleton-highlight: rgba(65, 94, 138, 0.58);
 
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -90,6 +96,85 @@
   --radius-full: 9999px;
 }
 
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Background Colors */
+  --background: #f6f2f7;
+  --background-deep: #ede7f1;
+  --surface: #ffffff;
+  --surface-elevated: #f6f1f8;
+
+  /* Foreground Colors */
+  --foreground: #141319;
+  --foreground-muted: #4e495b;
+  --foreground-subtle: #7a748a;
+
+  /* Card Colors */
+  --card: rgba(255, 255, 255, 0.9);
+  --card-foreground: #141319;
+
+  /* Primary */
+  --primary: #121015;
+  --primary-hover: #1d1a24;
+  --primary-active: #07060a;
+  --primary-foreground: #ffffff;
+  --primary-glow: rgba(18, 16, 21, 0.2);
+
+  /* Accent */
+  --accent: #6e4bff;
+  --accent-hover: #5f3fea;
+  --accent-foreground: #ffffff;
+
+  /* Semantic Colors */
+  --success: #2f8f4e;
+  --success-bg: rgba(22, 163, 74, 0.12);
+  --success-border: rgba(22, 163, 74, 0.32);
+
+  --warning: #8a7700;
+  --warning-bg: rgba(245, 230, 93, 0.25);
+  --warning-border: rgba(138, 119, 0, 0.28);
+
+  --error: #dc2626;
+  --error-bg: rgba(220, 38, 38, 0.12);
+  --error-border: rgba(220, 38, 38, 0.32);
+
+  --info: #4f67c9;
+  --info-bg: rgba(2, 132, 199, 0.12);
+  --info-border: rgba(2, 132, 199, 0.32);
+
+  /* UI Elements */
+  --muted: #726c82;
+  --border: rgba(30, 24, 41, 0.14);
+  --border-hover: rgba(30, 24, 41, 0.26);
+  --ring: #121015;
+  --ring-opacity: 0.26;
+
+  /* Gradients */
+  --gradient-hero: linear-gradient(
+    135deg,
+    #faf7fb 0%,
+    #f0ebf4 55%,
+    #f6f1f8 100%
+  );
+  --gradient-primary: linear-gradient(135deg, #121015, #1d1a24);
+  --gradient-accent: linear-gradient(135deg, #6e4bff, #5f3fea);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(20, 19, 25, 0.04);
+  --shadow-md:
+    0 6px 16px -6px rgba(20, 19, 25, 0.1), 0 2px 6px -2px rgba(20, 19, 25, 0.08);
+  --shadow-lg:
+    0 14px 30px -12px rgba(20, 19, 25, 0.15), 0 8px 14px -10px rgba(20, 19, 25, 0.12);
+  --shadow-xl:
+    0 24px 44px -20px rgba(20, 19, 25, 0.2), 0 10px 20px -12px rgba(20, 19, 25, 0.14);
+  --shadow-glow: 0 0 20px rgba(110, 75, 255, 0.18);
+
+  /* Skeleton */
+  --skeleton-base: rgba(183, 202, 233, 0.4);
+  --skeleton-highlight: rgba(143, 167, 207, 0.56);
+}
+
 /* ============================================
    BASE STYLES
    ============================================ */
@@ -108,7 +193,7 @@ body {
   margin: 0;
   padding: 0;
   font-family:
-    "Inter",
+    "Manrope",
     system-ui,
     -apple-system,
     sans-serif;
@@ -129,8 +214,9 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: 600;
-  letter-spacing: -0.025em;
+  font-family: "Manrope", system-ui, -apple-system, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   line-height: 1.2;
 }
 
@@ -235,9 +321,9 @@ a:hover {
 .animate-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(30, 41, 59, 0.4) 25%,
-    rgba(51, 65, 85, 0.6) 50%,
-    rgba(30, 41, 59, 0.4) 75%
+    var(--skeleton-base) 25%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -291,7 +377,7 @@ a:hover {
 }
 
 .glass-hover:hover {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--surface-elevated);
   border-color: var(--border-hover);
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
@@ -330,9 +416,9 @@ a:hover {
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(30, 41, 59, 0.4) 25%,
-    rgba(51, 65, 85, 0.6) 50%,
-    rgba(30, 41, 59, 0.4) 75%
+    var(--skeleton-base) 25%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -359,4 +445,101 @@ a:hover {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-from-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-from-top {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes grow {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   UTILITY ANIMATIONS
+   ============================================ */
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out;
+}
+
+.animate-slide-in {
+  animation: slide-in-from-bottom 0.4s ease-out;
+}
+
+.animate-grow {
+  animation: grow 0.3s ease-out;
 }

@@ -1,4 +1,4 @@
-# RemitFlow 💸
+# Volara 💸
 
 **Save 3-5% on Cross-Border Payments with Stellar**
 
@@ -16,16 +16,16 @@
 
 | Resource           | URL                           | Status    |
 | ------------------ | ----------------------------- | --------- |
-| 🌐 **Live App**    | https://rmtflow.vercel.app/          | 🟢 Active |
-| 🔗 **Testnet App** | https://testnet.remitflow.io  | 🟢 Active |
-| 📡 **API**         | https://api.remitflow.io      | 🟢 Active |
-| 📖 **API Docs**    | https://api.remitflow.io/docs | 🟢 Active |
+| 🌐 **Live App**    | https://volara.vercel.app/          | 🟢 Active |
+| 🔗 **Testnet App** | https://testnet.volara.finance  | 🟢 Active |
+| 📡 **API**         | https://api.volara.finance      | 🟢 Active |
+| 📖 **API Docs**    | https://api.volara.finance/docs | 🟢 Active |
 
 ---
 
 ## 💬 Share Your Feedback
 
-We value your input! Help us improve RemitFlow by sharing your experience:
+We value your input! Help us improve Volara by sharing your experience:
 
 📝 **[Fill out our Feedback Form](https://forms.gle/WQdUCZrs7FzK2Qa2A)** - Takes only 2 minutes!
 
@@ -49,9 +49,9 @@ Your feedback helps us:
 
 ---
 
-## 💡 What is RemitFlow?
+## 💡 What is Volara?
 
-RemitFlow is an **intelligent payment router** that finds the cheapest cross-border payment route across multiple Stellar anchors, automatically saving you money on every transaction.
+Volara is an **intelligent payment router** that finds the cheapest cross-border payment route across multiple Stellar anchors, automatically saving you money on every transaction.
 
 ### How It Works
 
@@ -62,7 +62,7 @@ RemitFlow is an **intelligent payment router** that finds the cheapest cross-bor
 **Example:** Sending $500 USD to Colombia
 
 - Traditional services: **$15-25 in fees**
-- RemitFlow: **$5-10 in fees**
+- Volara: **$5-10 in fees**
 - **You save: $10-15 per transaction** ✨
 
 ---
@@ -74,6 +74,10 @@ RemitFlow is an **intelligent payment router** that finds the cheapest cross-bor
 | 🔄 **Rate Comparison** | Real-time rates from multiple anchors | Always get the best deal  |
 | 🎯 **Smart Routing**   | Auto-selects cheapest route           | Save 3-5% automatically   |
 | 🔐 **Non-Custodial**   | Freighter wallet + SEP-10 auth        | You control your keys     |
+| 🛒 **Anchor Marketplace** | Activate/deactivate anchors per wallet | Personalized route control |
+| 🔁 **Recurring Drafts** | Scheduled sends with per-cycle confirmation | Safe recurring remittances |
+| 📈 **Admin Metrics** | DAU/MAU/volume/retention + reconciliation view | Production visibility |
+| ✅ **Data Indexing** | Horizon reconciliation worker for completed txs | Blockchain-verifiable settlement |
 | 📊 **Transparent**     | No hidden fees, full breakdown        | Know exactly what you pay |
 | ⚡ **Fast**            | Stellar-powered settlements           | Near-instant transactions |
 | 🌍 **Global**          | Multiple corridors supported          | Send anywhere             |
@@ -149,6 +153,15 @@ cd docker && docker compose up -d
 # API: http://localhost:3001
 ```
 
+### Bootstrap First Admin Wallet
+
+```bash
+cd backend
+npm run bootstrap:admin -- GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+```
+
+This enables admin login using the same wallet-based SEP-10 flow.
+
 📖 **Full deployment guide:** [DEPLOYMENT.md](DEPLOYMENT.md)  
 🆓 **Deploy for FREE:** [FREE_DEPLOYMENT.md](FREE_DEPLOYMENT.md)
 
@@ -223,6 +236,7 @@ cd smart-contracts && cargo test --release
 | 📐 [ARCHITECTURE.md](ARCHITECTURE.md)                 | System design & data flow |
 | 🚀 [DEPLOYMENT.md](DEPLOYMENT.md)                     | Production deployment     |
 | 🆓 [FREE_DEPLOYMENT.md](FREE_DEPLOYMENT.md)           | Zero-cost deployment      |
+| 📈 [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md)     | Monitoring + alerts + indexing |
 | 🛠️ [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)         | Development setup         |
 | 📡 [docs/API.md](docs/API.md)                         | API reference             |
 | 🔧 [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Common issues             |

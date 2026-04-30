@@ -3,20 +3,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-semibold motion-safe:transition-all motion-safe:duration-300 motion-safe:ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] motion-reduce:transition-none",
   {
     variants: {
       variant: {
         primary:
-          "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5",
+          "bg-[var(--gradient-primary)] text-[var(--primary-foreground)] shadow-lg hover:-translate-y-0.5 hover:brightness-105",
         secondary:
-          "bg-white/5 text-white border border-white/20 hover:bg-white/10 hover:border-white/30 backdrop-blur-sm",
+          "bg-[var(--surface-elevated)] text-[var(--foreground)] border border-[var(--border)] hover:brightness-105 hover:border-[var(--border-hover)] backdrop-blur-sm",
         ghost:
-          "text-[var(--foreground-muted)] hover:text-white hover:bg-white/5",
+          "text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)]",
         destructive:
-          "bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20 hover:border-rose-500/50",
+          "bg-[var(--error-bg)] text-[var(--error)] border border-[var(--error-border)] hover:brightness-110",
         success:
-          "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50",
+          "bg-[var(--success-bg)] text-[var(--success)] border border-[var(--success-border)] hover:brightness-110",
       },
       size: {
         sm: "h-9 px-4 text-xs",
@@ -30,6 +30,8 @@ const buttonVariants = cva(
     },
   },
 );
+
+export { buttonVariants };
 
 export interface ButtonProps
   extends

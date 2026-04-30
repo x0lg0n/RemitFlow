@@ -1,0 +1,95 @@
+services:
+  # Backend API Service
+  - type: web
+    name: volara-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && corepack enable && pnpm install && pnpm build
+    startCommand: cd backend && node dist/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        scope: shared
+      - key: REDIS_URL
+        scope: shared
+      - key: JWT_SECRET
+        generateValue: true
+      - key: STELLAR_RPC_URL
+        value: https://soroban-testnet.stellar.org
+      - key: STELLAR_NETWORK
+        value: testnet
+      - key: STELLAR_HORIZON_URL
+        value: https://horizon-testnet.stellar.org
+      - key: SOROBAN_CONTRACT_ADDRESS
+        scope: shared
+      - key: SEP10_HOME_DOMAIN
+        value: api.volara.finance
+      - key: SEP10_WEB_AUTH_DOMAIN
+        value: api.volara.finance
+      - key: SEP10_SERVER_SECRET
+        scope: shared
+      - key: SESSION_COOKIE_NAME
+        value: volara_session
+      - key: CORS_ORIGINS
+        value: https://volara.vercel.app
+      - key: INDEXING_WORKER_INTERVAL_MS
+        value: "300000"
+      - key: RECURRING_WORKER_INTERVAL_MS
+        value: "60000"
+      - key: LOG_LEVEL
+        value: info
+
+  # Oracle Service
+  - type: web
+    name: volara-oracle
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd oracle && corepack enable && pnpm install && pnpm build
+    startCommand: cd oracle && node dist/scheduler.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        scope: shared
+      - key: REDIS_URL
+        scope: shared
+      - key: ORACLE_SECRET_KEY
+        scope: shared
+      - key: SOROBAN_RPC_URL
+        value: https://soroban-testnet.stellar.org
+      - key: SOROBAN_NETWORK_PASSPHRASE
+        value: Test SDF Network ; September 2015
+      - key: SOROBAN_CONTRACT_ADDRESS
+        scope: shared
+      - key: POLL_INTERVAL_MINUTES
+        value: "5"
+      - key: LOG_LEVEL
+        value: info
+
+# Cron jobs for scheduled tasks
+jobs:
+  - type: cron
+    name: oracle-scheduler
+    env: node
+    schedule: "*/10 * * * *"
+    buildCommand: cd oracle && pnpm install
+    startCommand: cd oracle && node dist/scheduler.js
+    envVars:
+      - key: DATABASE_URL
+        scope: shared
+      - key: REDIS_URL
+        scope: shared
+      - key: ORACLE_SECRET_KEY
+        scope: shared
+      - key: SOROBAN_RPC_URL
+        value: https://soroban-testnet.stellar.org
+      - key: SOROBAN_NETWORK_PASSPHRASE
+        value: Test SDF Network ; September 2015
+      - key: SOROBAN_CONTRACT_ADDRESS
+        scope: shared
